@@ -1,111 +1,110 @@
 /* Reset default styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  /* Body styles */
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #333;
-  }
-  
-  /* Container styles */
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 10px;
-    display: flex; /* Added */
-  }
-  
-  /* Header styles */
-  .intro {
-    text-align: center;
-    margin-bottom: 40px;
-    flex: 1; /* Added */
-  }
-  
-  .intro h1 {
-    font-size: 36px;
-    margin-bottom: 20px;
-  }
-  
-  .intro p {
-    font-size: 18px;
-  }
-  
-  /* Features styles */
-  .features {
-    margin-bottom: 40px;
-    flex: 1; /* Added */
-  }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-   /* Image styles */
-   img {
-    max-width: 50%;
-    height: auto;
-    margin-left: 40px; /* Added */
-    flex: 1; /* Added */
-  }
-  
-  .features h2 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .features ul {
-    list-style-type: disc;
-    margin-left: 20px;
-  }
-  
-  .features li {
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-  
-  /* CTA styles */
-  .cta {
-    text-align: center;
-    margin-bottom: 40px;
-  }
-  
-  .cta h3 {
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  .cta p {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  
-  .button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 18px;
-    text-decoration: none;
-    color: #fff;
-    background-color: #333;
-    border-radius: 4px;
-    margin-right: 10px;
-  }
-  
-  .button:hover {
-    background-color: #555;
-  }
-  
- 
-  /* Footer styles */
-  footer {
-    text-align: center;
-    background-color: #333;
-    color: #fff;
-    padding: 20px 0;
-  }
-  
-  footer p {
-    font-size: 14px;
-  }
-  
+/* Body styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* Container styles */
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px;
+  display: flex; /* Added */
+}
+
+/* Header styles */
+.intro {
+  text-align: center;
+  margin-bottom: 40px;
+  flex: 1; /* Added */
+}
+
+.intro h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.intro p {
+  font-size: 18px;
+}
+
+/* Features styles */
+.features {
+  margin-bottom: 40px;
+  flex: 1; /* Added */
+}
+
+  /* Image styles */
+  img {
+  max-width: 50%;
+  height: auto;
+  margin-left: 40px; /* Added */
+  flex: 1; /* Added */
+}
+
+.features h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.features ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+.features li {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+/* CTA styles */
+.cta {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.cta h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.cta p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 18px;
+  text-decoration: none;
+  color: #fff;
+  background-color: #333;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.button:hover {
+  background-color: #555;
+}
+
+
+/* Footer styles */
+footer {
+  text-align: center;
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+}
+
+footer p {
+  font-size: 14px;
+}

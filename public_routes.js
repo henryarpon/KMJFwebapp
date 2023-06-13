@@ -10,8 +10,8 @@ router.get('/gallery', (req, res) => {
   res.render('public_views/gallery');
 });
 
-router.get('/content', (req, res) => {
-    res.render('public_views/content');
+router.get('/contact', (req, res) => {
+    res.render('public_views/contact');
   });
 
 export default router;
