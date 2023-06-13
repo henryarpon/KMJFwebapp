@@ -1,0 +1,19 @@
+.products {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .products img {
+    width: 300px;
+    height: auto;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .products img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  

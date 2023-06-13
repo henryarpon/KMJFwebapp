@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.purple-green.min.css">
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <title>HomePage</title>
+</head>
+<body>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <%- include('partials/public_navbar') %>
+    <main class="mdl-layout__content">
+        <div class="page-content">
+            
+            <section class="intro">
+                <h1>Welcome to KMJF Polynets</h1>
+                <p>Discover the best quality range nets for your farm, poultry, fishing, and industrial needs.</p>
+              </section>
+              
+            <div class="container">
+                <section class="features">
+                    <h2>Why Choose KMJF Polynets?</h2>
+                    <ul>
+                    <li>High-quality nets built to withstand rigorous conditions</li>
+                    <li>Extensive range of nets for various applications</li>
+                    <li>Reliable and durable materials for long-lasting performance</li>
+                    <li>Customization options available to meet your specific requirements</li>
+                    <li>Expert advice and exceptional customer service</li>
+                    </ul>
+                </section>
+
+                <img src="images/kmjf.jpg" alt="kmjf">
+            </div>
+              
+            <section class="cta">
+                <h3>Ready to Experience the Best Quality Range Nets?</h3>
+                <p>Explore our products or contact us to discuss your needs.</p>
+                <a href="/products" class="button">Browse Products</a>
+                <a href="/contact" class="button">Contact Us</a>
+            </section>
+            
+            <footer>
+                <p>&copy; 2023 KMJF Polynets. All rights reserved.</p>
+            </footer>
+        </div>
+    </main>
+</div>
+</body>
+</html>
