@@ -1,17 +1,25 @@
 import express from 'express';
 
-const router = express.Router();
+const publicRouter = express.Router();
 
-router.get('/', (req, res) => {
+publicRouter.get('/', (req, res) => {
   res.render('public_views/index');
 });
 
-router.get('/gallery', (req, res) => {
+publicRouter.get('/gallery', (req, res) => {
   res.render('public_views/gallery');
 });
 
-router.get('/contact', (req, res) => {
-    res.render('public_views/contact');
-  });
+publicRouter.get('/content', (req, res) => {
+  res.render('public_views/content');
+});
 
-export default router;
+publicRouter.get('/contact', (req, res) => {
+    res.render('public_views/contact');
+});
+
+publicRouter.get('/login', (req, res) => {
+  res.render('public_views/login');
+});
+
+export default publicRouter;
