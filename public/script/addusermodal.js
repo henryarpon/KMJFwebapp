@@ -22,8 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 const responseData = await response.json();
-
                 const messageContainer = document.getElementById('message-container');
+                
                 if (responseData.success) {
                     messageContainer.innerHTML = `<div class="success-message">${responseData.message}
                         <button class="modal-close">OK</button>

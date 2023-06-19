@@ -6,7 +6,7 @@ import flash from 'connect-flash';
 import publicRouter from './public_routes.js';
 import privateRouter from './private_route.js';
 import mongoose from 'mongoose';
-import User from './models/users.js';
+import addUserHandler from './controller/addUserHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,14 +34,12 @@ app.use((req, res, next) => {
     next();
 });
 
-
 //Initiate mongodb database
 mongoose.connect('mongodb://localhost:27017/KMJFDBase', {useNewUrlParser: true});
   
-//route for public pages
+//pages routes
 app.use('/', publicRouter);
 app.use('/', privateRouter);
-
 
 //route for user login
 app.post('/login', (req, res) => {
@@ -52,27 +50,7 @@ app.post('/login', (req, res) => {
     console.log(password);
 });
 
-app.post('/addUser', (req, res) => {
-    const username = req.body.username;
-    const emailAddress = req.body.email;
-    const userType = req.body.userType;
-    const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
-
-    console.log(password);
-    console.log(confirmPassword);
-
-    if (password !== confirmPassword) {
-        console.log('password mismatch')
-        req.flash('error', 'Password mismatch');
-        res.json({ success: false, message: 'Password mismatch' });
-    } else {
-        console.log('password match')
-        req.flash('success', 'User added successfully');
-        res.json({ success: true, message: 'User added successfully' });
-    }
-    // res.render('private_views/account');
-});
+app.post('/addUser', addUserHandler);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
