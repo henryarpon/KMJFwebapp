@@ -8,9 +8,6 @@ async function addUserHandler(req, res) {
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
 
-    console.log(password);
-    console.log(confirmPassword);
-
     if (password !== confirmPassword) {
         console.log('password mismatch')
         req.flash('error', 'Password mismatch');
