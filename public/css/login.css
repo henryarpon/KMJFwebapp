@@ -1,35 +1,55 @@
-/* Modal container */
-.modal {
-  margin-top: 150px;
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+/* Form Styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
 }
 
-/* Modal content */
-.modal-content {
-  background-color: #fefefe;
-  margin: 10% auto;
+.container {
+  max-width: 400px;
+  margin: 0 auto;
   padding: 20px;
-  border: 1px solid #888;
-  width: 300px;
-  text-align: center;
-}
-  
-/* Close button hover effect */
-.modal-close:hover {
-  color: black;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  margin-top: 100px;
 }
 
-/* Show the modal */
-.modal-show {
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
   display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 3px;
+  border: 1px solid #cccccc;
+  box-sizing: border-box; 
+}
+
+input[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: #4caf50;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
 }
 
 button {
@@ -47,6 +67,39 @@ button {
 
 button:hover {
   background-color: green;
+}
+
+/* Modal Style */
+
+.modal {
+  margin-top: 150px;
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
+  text-align: center;
+}
+  
+.modal-close:hover {
+  color: black;
+}
+
+/* Show the modal */
+.modal-show {
+  display: block;
 }
 
 /* Footer styles */

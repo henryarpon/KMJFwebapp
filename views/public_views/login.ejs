@@ -15,31 +15,23 @@
         <%- include('partials/public_navbar') %>
         <main class="mdl-layout__content">
             <div class="page-content">
-                <div class="mdl-card mdl-shadow--2dp" style="max-width: 320px; margin: 0 auto; margin-top: 100px;">
-                    <div class="mdl-card__title" style="background-color: #3F51B5; color: white;">
-                    <h2 class="mdl-card__title-text">Login</h2>
-                    </div>
-                    <div class="mdl-card__supporting-text" style="padding: 24px;">
-                        <form action="/login" method="POST" id="login">
-                            <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
-                                <input class="mdl-textfield__input" type="text" id="username" name="username">
-                                <label class="mdl-textfield__label" for="username">Username</label>
-                            </div>
-                            <br>
-                            <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
-                                <input class="mdl-textfield__input" type="password" id="password" name="password">
-                                <label class="mdl-textfield__label" for="password">Password</label>
-                            </div>
-                            <br>
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type="submit">
-                                Login
-                            </button>
-                        </form>
-                        <div class="modal" id="modal">
-                            <div class="modal-content" id="message-container"></div>
-                        </div>  
-                    </div>
+                <div class="container">
+                    <h2>Login</h2>
+                    <form action="/login" method="POST" id="login">
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <input type="submit" value="Login">
+                    </form>
                 </div>
+                <div class="modal" id="modal">
+                    <div class="modal-content" id="message-container"></div>
+                </div>  
             </div>
         </main>
         <%- include('partials/public_footer') %>

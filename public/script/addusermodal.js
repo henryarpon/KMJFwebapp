@@ -1,20 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
     const addUserForm = document.querySelector('#addUser');
-    const modal = document.getElementById('modal');
+    const editUserForm = document.querySelector('#editUser');
+    const addModal = document.querySelector('#addModal');
+    const editModal = document.querySelector('#editModal');
 
-    addUserForm.addEventListener('submit', async (event) => {
+    const closeModal = (modal) => {
+        modal.classList.remove('modal-show');
+    };
+
+    const showMessage = (container, message, className) => {
+        container.innerHTML = `
+            <div class="${className}">${message}
+                <button class="modal-close">OK</button>
+            </div>`;
+    };
+
+    const handleSubmit = async (event, form, container, modal) => {
         event.preventDefault();
 
-        const formData = {
-            username: addUserForm.querySelector('#username').value,
-            email: addUserForm.querySelector('#email').value,
-            userType: addUserForm.querySelector('#userType').value,
-            password: addUserForm.querySelector('#password').value,
-            confirmPassword: addUserForm.querySelector('#confirmPassword').value,
-        };
+        const formData = Object.fromEntries(new FormData(form));
 
         try {
-            const response = await fetch(addUserForm.action, {
+            const response = await fetch(form.action, {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: { 'Content-Type': 'application/json' }
@@ -22,32 +29,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (response.ok) {
                 const responseData = await response.json();
-                const messageContainer = document.getElementById('message-container');
-                
-                if (responseData.success) {
-                    messageContainer.innerHTML = `<div class="success-message">${responseData.message}
-                        <button class="modal-close">OK</button>
-                    </div>`;
-                } else {
-                    messageContainer.innerHTML = `<div class="error-message">${responseData.message}
-                        <button class="modal-close">OK</button>
-                    </div>`;
-                }
-
+                showMessage(container, responseData.message, responseData.success ? 'success-message' : 'error-message');
                 modal.classList.add('modal-show');
-                addUserForm.reset();
-            } else {
+
+                if (responseData.success) {
+                    form.reset();
+                }
+            } 
+            else {
                 console.error('Error:', response.statusText);
             }
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error:', error);
+        }
+    };
+
+    addUserForm.addEventListener('submit', (event) => {
+        handleSubmit(event, addUserForm, document.querySelector('#add-container'), addModal);
+    });
+
+    editUserForm.addEventListener('submit', (event) => {
+        handleSubmit(event, editUserForm, document.querySelector('#edit-container'), editModal);
+    });
+
+    addModal.addEventListener('click', (event) => {
+        if (event.target.classList.contains('modal-close')) {
+            event.preventDefault();
+            closeModal(addModal);
         }
     });
 
-    modal.addEventListener('click', (event) => {
+    editModal.addEventListener('click', (event) => {
         if (event.target.classList.contains('modal-close')) {
             event.preventDefault();
-            modal.classList.remove('modal-show');
+            closeModal(editModal);
         }
     });
 });

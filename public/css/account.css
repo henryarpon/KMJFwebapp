@@ -6,12 +6,12 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #f2f2f2;
-    }
+}
 
 h2 {
     margin-top: 0;
     text-align: center;
-}
+    }
 
 .form-group {
     margin-bottom: 10px;
@@ -21,7 +21,7 @@ label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-}
+    }
 
 input,
 select {
@@ -61,25 +61,25 @@ button:hover {
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
-  }
-  
-  /* Modal content */
-  .modal-content {
+}
+
+/* Modal content */
+.modal-content {
     background-color: #fefefe;
     margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
     width: 300px;
     text-align: center;
-  }
-    
-  /* Close button hover effect */
-  .modal-close:hover {
+}
+
+/* Close button hover effect */
+.modal-close:hover {
     color: black;
-  }
-  
-  /* Show the modal */
-  .modal-show {
+}
+
+/* Show the modal */
+.modal-show {
     display: block;
-  }
-  
+}
+
