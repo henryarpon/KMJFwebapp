@@ -1,0 +1,32 @@
+<div class="card">
+    <h2>Add User</h2>
+    <form action="/addUser" method="post" id="addUser">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email"required>
+        </div>
+        <div class="form-group">
+            <label for="userType">User Type:</label>
+            <select id="userType" name="userType" required>
+                <option value="admin">Admin</option>
+                <option value="basic-user">Basic User</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+        <button type="submit" id="add-user-button">Add User</button>               
+    </form>
+    <div class="addModal modal" id="addModal">
+        <div class="modal-content" id="add-container"> </div>
+    </div>   
+</div>

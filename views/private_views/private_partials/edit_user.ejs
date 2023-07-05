@@ -1,0 +1,30 @@
+<div class="card">
+    <h2>Edit User</h2>
+    <form action="/editUser" method="post" id="editUser">
+        <div class="form-group">
+            <label for="selectUser">Select User:</label>
+            <select id="selectUser" name="selectUser" required>
+                <% users.forEach((user) => { %>
+                    <option value="<%= user.username %>"><%= user.username %></option>
+                <% }); %>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="newUsername">New Username:</label>
+            <input type="text" id="newUsername" name="newUsername" required>
+        </div>
+        <input type="hidden" id="selectedUsername" name="selectedUsername" value="">
+        <div class="form-group">
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+        </div>
+        <div class="form-group">
+            <label for="confirmNewPassword">Confirm New Password:</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+        </div>
+        <button type="submit" id="edit-user-button">Edit User</button>
+    </form>
+    <div class="editModal modal" id="editModal">
+        <div class="modal-content" id="edit-container"> </div>
+    </div>  
+</div>

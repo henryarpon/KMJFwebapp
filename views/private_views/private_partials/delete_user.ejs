@@ -1,0 +1,17 @@
+<div class="card">
+    <h2>Delete User</h2>
+    <form action="/deleteUser" method="post" id="deleteUser">
+        <div class="form-group">
+            <label for="selectUserDelete">Select User:</label>
+            <select id="selectUserDelete" name="selectUserDelete" required>
+                <% users.forEach((user) => { %>
+                    <option value="<%= user.username %>"><%= user.username %></option>
+                <% }); %>
+            </select>
+        </div>
+        <button type="submit" id="delete-user-button">Delete User</button>
+    </form>
+    <div class="deleteModal modal" id="deleteModal">
+        <div class="modal-content" id="delete-container"></div>
+    </div>
+</div>
