@@ -15,6 +15,7 @@ import loginHandler from './controller/loginhandler.js';
 import addUserHandler from './controller/addUserHandler.js';
 import editUserHandler from './controller/editUserHandler.js';
 import deleteUserHandler from './controller/deleteUserHandler.js';
+import submitContentHandler from './controller/submitContentHandler.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,8 +26,8 @@ const app = express();
 const port = 3000;
 
 app.use(flash());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
@@ -47,15 +48,15 @@ app.use((req, res, next) => {
 //Configure multer storage
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.join(__dirname, 'public/uploads'));
+        cb(null, path.join(__dirname, 'public/uploads'));
     },
     filename: function (req, file, cb) {
-      cb(null, Date.now() + '-' + file.originalname);
+        cb(null, Date.now() + '-' + file.originalname);
     }
-  });
-  
-  // Create multer instance
-  const upload = multer({ storage: storage });
+});
+
+// Create multer instance
+const upload = multer({ storage: storage });
 
 //Initiate mongodb database
 mongoose.connect('mongodb://localhost:27017/KMJFDBase', {useNewUrlParser: true});
@@ -69,35 +70,7 @@ app.post('/login', loginHandler);
 app.post('/addUser', addUserHandler);
 app.post('/editUser', editUserHandler);
 app.post('/deleteUser', deleteUserHandler);
-
-app.post('/submitContent', upload.single('photo'), async (req, res) => {
-    
-    try {
-        // Extract form data
-        const { title, content } = req.body;
-        // Create a new Content instance
-
-        const newContent = new Content({
-            uploaded_image: req.file.filename, // Save the file name in the database
-            image_path: req.file.path,
-            title,
-            content,
-            created_by: 'Your User ID', // Provide the user ID here
-            created_at: new Date(),
-            updated_at: new Date()
-        });
-
-        // Save the content to the database
-        await newContent.save();
-        req.flash('success', 'Content posted successfully');
-        res.json({ success: true, message: 'Content posted successfully' });
-    } 
-    catch (error) {
-        console.error('Error adding user:', err);
-        req.flash('error', 'Error adding content');
-        res.json({ success: false, message: 'Error adding content' });
-    }
-});
+app.post('/submitContent', upload.single('photo'), submitContentHandler);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);

@@ -8,6 +8,7 @@ async function loginHandler(req, res) {
     try {
         // Find the user by username
         const user = await User.findOne({ username });
+    
         if (!user) {
             req.flash('error', 'Invalid username or password');
             return res.json({ success: false, message: 'User not found' });
@@ -18,6 +19,8 @@ async function loginHandler(req, res) {
         if (passwordMatch) {
             // Store the user's ID in the session
             req.session.userId = user._id;
+            req.session.username = user.username;
+
             // Redirect to the private page (e.g., dashboard)
             return res.json({ success: true, redirectUrl: '/dashboard' });
         } else {

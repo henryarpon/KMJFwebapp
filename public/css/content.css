@@ -1,0 +1,55 @@
+
+h1 {
+    text-align: center;
+}
+
+.page-content {
+    width: 80%;
+    margin: 20px auto;
+}
+
+.content-card {
+    background-color: #f5f5f5;
+    border: 1px solid #e9ebee;
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-card img {
+    max-width: 80%;
+    height: auto;
+    margin: 0 auto 16px;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+}
+
+
+.content-card p {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.content-card p.date {
+    font-size: 14px;
+    font-style: italic;
+}
+
+.content-card p:last-child {
+    margin-bottom: 0;
+}
+
+.content-card h3 {
+    font-size: 1.5em;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.content-card p,
+.content-card h3 {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
