@@ -1,59 +1,67 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const contentForm = document.querySelector('#submitContent');
-  const contentModal = document.querySelector('#contentModal');
-  const contentContainer = document.querySelector('#content-container');
-  const modalCloseButton = document.querySelector('#modal-close');
-  const contentInput = document.querySelector('#content'); // Added this line
+    const contentForm = document.querySelector('#submitContent');
+    const contentModal = document.querySelector('#contentModal');
+    const contentContainer = document.querySelector('#content-container');
 
-  contentForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent the default form submission
-
-    // Get the HTML content from the Quill editor
-    const editor = document.querySelector('#editor .ql-editor');
-    const content = editor.innerHTML;
-    contentInput.value = content; // Assign the content to the hidden input field
-
-    const formData = new FormData(contentForm);
-
-    try {
-    const response = await fetch('/submitContent', {
-    method: 'POST',
-    body: formData
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'align': [] }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'font': [] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['link', 'image', 'video'],
+            ]
+        }
     });
+      
 
-    if (response.ok) {
-    // Display success message as a modal
-    const successMessage = await response.json();
-    showMessage(successMessage.message, 'success-message');
-    contentModal.classList.add('modal-show');
-    } else {
-    // Handle the error response
-    const errorMessage = await response.json();
-    showMessage(errorMessage.message, 'error-message');
-    contentModal.classList.add('modal-show');
+    function showMessage(message, className) {
+        const contentContainer = document.querySelector('#content-container');
+        contentContainer.innerHTML = `
+            <div class="${className}">${message}</div>
+            <button class="modal-close">Ok</button>
+        `;
+
+        const closeButton = contentContainer.querySelector('.modal-close');
+        closeButton.addEventListener('click', () => {
+            contentModal.style.display = 'none';
+        });
     }
-    } catch (error) {
-    // Handle the fetch error
-    console.error(error);
-    showMessage('Error occurred', 'error-message');
-    contentModal.classList.add('modal-show');
-    }
-  });
 
-  // Rest of the code remains the same
-  function showMessage(message, className) {
-    contentContainer.innerHTML = `
-      <div class="${className}">${message}
-        <button class="modal-close">Ok</button>
-      </div>
-    `;
-  }
+    contentForm.addEventListener('submit', async (event) => {
 
-  // Close the modal when the user clicks the close button
-  contentModal.addEventListener('click', (event) => {
-      if (event.target.classList.contains('modal-close')) {
-          event.preventDefault();
-          contentModal.classList.remove('modal-show');
-      }
-  });
+        event.preventDefault();
+        const content = quill.root.innerHTML;
+        const formData = new FormData(contentForm);
+        formData.set('content', content);
+
+        try {
+            const response = await fetch('/submitContent', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const successMessage = await response.json();
+                showMessage(successMessage.message, 'success-message');
+                contentModal.style.display = 'block';
+            } 
+            else {
+                const errorMessage = await response.json();
+                showMessage(errorMessage.message, 'error-message');
+                contentModal.style.display = 'block';
+            }
+        } 
+        catch (error) {
+            console.error(error);
+            showMessage('Error occurred', 'error-message');
+            contentModal.style.display = 'block';
+        }
+    });
 });

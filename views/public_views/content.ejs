@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/content.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.purple-green.min.css">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-    <script src="script/date_handler.js"></script>
-    <title>Document</title>
-</head>
-<body>
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
-    <%- include('partials/public_navbar') %>
-    <main class="mdl-layout__content">
-        <div class="page-content">
-            <h1>Offers and Promotions</h1>
-            <% contents.forEach((content) => { %>
-                <div class="content-card">
-                    <h3><%= content.title %></h3>
-                    <p class="date" data-created="<%= content.created_at %>"></p>
-                    <p><%= content.content %></p>
-                    <% if (content.image_path) { %>
-                        <img src="/uploads/<%= content.image_path.split('\\').pop() %>" alt="Content Image">
-                    <% } %>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/content.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.purple-green.min.css">
+        <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+        <script src="script/date_handler.js"></script>
+        <title>Document</title>
+    </head>
+    <body>
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+            <%- include('partials/public_navbar') %>
+            <main class="mdl-layout__content">
+                <div class="page-content">
+                    <h1>Offers and Promotions</h1>
+                    <% contents.forEach((content) => { %>
+                        <div class="content-card">
+                            <div class="content-head">
+                                <h3><%= content.title %></h3>
+                                <p class="date" data-created="<%= content.created_at %>"></p>
+                            </div>
+                            <div class="content-body"><%- content.content %></div>
+                        </div>
+                    <% }); %>
                 </div>
-            <% }); %>
+            </main>
         </div>
-    </main>
-</div>
-</body>
+    </body>
 </html>

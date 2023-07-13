@@ -2,10 +2,8 @@ import mongoose from 'mongoose';
 
 const contentSchema = new mongoose.Schema({
     
-    uploaded_image: String,
-    image_path: String,
     title: String,
-    content: String,
+    content: mongoose.Schema.Types.Mixed,
     created_by: String,
     created_at: Date,
     updated_at: Date

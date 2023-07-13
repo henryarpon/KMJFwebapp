@@ -1,6 +1,11 @@
+#editor {
+  background-color: white;
+  height: 200px;
+}
+
 .card {
   margin: 40px 0px 20px 50px;
-  width: 800px;
+  width: 60%;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
