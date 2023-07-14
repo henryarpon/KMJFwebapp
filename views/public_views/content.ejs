@@ -17,13 +17,14 @@
             <main class="mdl-layout__content">
                 <div class="page-content">
                     <h1>Offers and Promotions</h1>
+                    <% console.log(contents) %>
                     <% contents.forEach((content) => { %>
                         <div class="content-card">
                             <div class="content-head">
                                 <h3><%= content.title %></h3>
                                 <p class="date" data-created="<%= content.created_at %>"></p>
                             </div>
-                            <div class="content-body"><%- content.content %></div>
+                            <div class="content-body"><%- content.content.html %></div>
                         </div>
                     <% }); %>
                 </div>

@@ -9,8 +9,6 @@ import bcrypt from 'bcrypt';
 import publicRouter from './public_routes.js';
 import privateRouter from './private_route.js';
 import mongoose from 'mongoose';
-import multer from 'multer';
-import path from 'path';
 import loginHandler from './controller/loginhandler.js';
 import addUserHandler from './controller/addUserHandler.js';
 import editUserHandler from './controller/editUserHandler.js';
@@ -45,19 +43,6 @@ app.use((req, res, next) => {
     next();
 });
 
-//Configure multer storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, 'public/uploads'));
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-    }
-});
-
-// Create multer instance
-const upload = multer({ storage: storage });
-
 //Initiate mongodb database
 mongoose.connect('mongodb://localhost:27017/KMJFDBase', {useNewUrlParser: true});
   
@@ -70,7 +55,7 @@ app.post('/login', loginHandler);
 app.post('/addUser', addUserHandler);
 app.post('/editUser', editUserHandler);
 app.post('/deleteUser', deleteUserHandler);
-app.post('/submitContent', upload.single('photo'), submitContentHandler);
+app.post('/submitContent', submitContentHandler);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);

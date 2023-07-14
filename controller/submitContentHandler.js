@@ -5,15 +5,12 @@ const submitContentHandler = async (req, res) => {
         const { title, content } = req.body;
         const username = req.session.username;
 
-        console.log('Type:', typeof content);
-
         const newContent = new Content({
-            // Update the properties according to your Content model
             title,
-            content,
+            content: JSON.parse(content),
             created_by: username,
             created_at: new Date(),
-            updated_at: new Date(),
+            updated_at: new Date()
         });
 
         await newContent.save();

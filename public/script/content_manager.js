@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const contentForm = document.querySelector('#submitContent');
     const contentModal = document.querySelector('#contentModal');
-    const contentContainer = document.querySelector('#content-container');
 
     const quill = new Quill('#editor', {
         theme: 'snow',
@@ -35,24 +34,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     contentForm.addEventListener('submit', async (event) => {
-
         event.preventDefault();
-        const content = quill.root.innerHTML;
-        const formData = new FormData(contentForm);
-        formData.set('content', content);
-
+        const content = {
+            html: quill.root.innerHTML,
+            photoUrl: 'your-photo-url'
+        };
+    
+        const titleInput = document.querySelector('#title');
+        const contentEditor = document.querySelector('#editor');
+    
+        const formData = {
+            title: titleInput.value,
+            content: JSON.stringify(content)
+        };
+    
         try {
             const response = await fetch('/submitContent', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
             });
-
+    
             if (response.ok) {
                 const successMessage = await response.json();
                 showMessage(successMessage.message, 'success-message');
                 contentModal.style.display = 'block';
-            } 
-            else {
+                titleInput.value = ''; 
+                contentEditor.innerHTML = '';
+            } else {
                 const errorMessage = await response.json();
                 showMessage(errorMessage.message, 'error-message');
                 contentModal.style.display = 'block';
