@@ -1,4 +1,5 @@
 import User from './models/users.js';
+import Content from './models/content.js';
 import requireLogin from './auth_middleware.js';
 import express from 'express';
 
@@ -36,13 +37,34 @@ privateRouter.get('/dashboard', requireLogin, (req, res) => {
     });
 });
 
-privateRouter.get('/content_manager', requireLogin, (req, res) => {
-    res.render('private_views/content_manager', {
-        pageTitle: 'Content Manager',
-        cssPath: 'css/contentmgr.css',
-        scriptPath: 'script/content_manager.js',
-        pageTab: 'content manager',
-    });
+privateRouter.get('/getContents', requireLogin, async (req, res) => {
+    try {
+        const contents = await Content.find().sort({ created_at: -1 });
+        res.json(contents);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+privateRouter.get('/content_manager', requireLogin, async (req, res) => {
+
+    try {
+
+        const contents = await Content.find().sort({ created_at: -1 });
+
+        res.render('private_views/content_manager', {
+            pageTitle: 'Content Manager',
+            cssPath: 'css/contentmgr.css',
+            scriptPath: 'script/content_manager.js',
+            pageTab: 'content manager',
+            contents
+        });
+    } 
+    catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 privateRouter.get('/logout', (req, res) => {

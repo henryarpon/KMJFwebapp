@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     const contentForm = document.querySelector('#submitContent');
     const contentModal = document.querySelector('#contentModal');
 
@@ -18,8 +18,49 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         }
     });
-      
 
+    // Updating the edit/delete table
+    async function updateContentTable() {
+        try {
+            const response = await fetch('/getContents');
+
+            if (response.ok) {
+                const contents = await response.json();
+                const table = document.getElementById('table-card');
+
+                // Clear existing table rows
+                table.innerHTML = '';
+
+                // Add new rows for each content
+                contents.forEach(content => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${content.title}</td>
+                        <td>
+                            <form action="/editContent" method="POST">
+                                <input type="hidden" name="contentId" value="${content._id}">
+                                <button type="submit">Edit</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/deleteContent" method="POST">
+                                <input type="hidden" name="contentId" value="${content._id}">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    `;
+                    table.appendChild(row);
+                });
+            } 
+            else {
+                console.error('Error:', response.statusText);
+            }
+        } 
+        catch (error) {
+            console.error('Error:', error);
+        }
+    };
+      
     function showMessage(message, className) {
         const contentContainer = document.querySelector('#content-container');
         contentContainer.innerHTML = `
@@ -29,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const closeButton = contentContainer.querySelector('.modal-close');
         closeButton.addEventListener('click', () => {
+            updateContentTable();
             contentModal.style.display = 'none';
         });
     }
@@ -74,5 +116,5 @@ document.addEventListener("DOMContentLoaded", () => {
             showMessage('Error occurred', 'error-message');
             contentModal.style.display = 'block';
         }
-    });
+    });  
 });

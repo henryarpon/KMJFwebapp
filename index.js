@@ -57,6 +57,23 @@ app.post('/editUser', editUserHandler);
 app.post('/deleteUser', deleteUserHandler);
 app.post('/submitContent', submitContentHandler);
 
+app.post('/deleteContent', async (req, res) => {
+try {
+const { contentId } = req.body;
+
+// Find and delete the content document by ID
+await Content.findByIdAndDelete(contentId);
+
+// Redirect the user back to the content manager page
+res.redirect('back');
+} catch (err) {
+console.error(err);
+res.status(500).send('Internal Server Error');
+}
+});
+
+
+
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });

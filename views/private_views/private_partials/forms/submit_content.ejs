@@ -1,0 +1,21 @@
+<div class="card">
+    <h2>Create New Content</h2>
+    <form id="submitContent">
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <input type="hidden" id="content" name="content">
+            <div id="editor"></div>
+            <textarea id="content-input" name="content" hidden></textarea>
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    <div class="contentModal modal" id="contentModal">
+        <div class="modal-content" id="content-container"></div>
+    </div>
+</div>
