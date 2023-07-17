@@ -1,6 +1,6 @@
 import User from './models/users.js';
 import Content from './models/content.js';
-import requireLogin from './auth_middleware.js';
+import requireLogin from './authMiddleware.js';
 import express from 'express';
 
 const privateRouter = express.Router();
@@ -22,7 +22,7 @@ privateRouter.get('/account', requireLogin, async (req, res) => {
     res.render('private_views/account', {
         pageTitle: 'Account Manager',
         cssPath: 'css/account.css',
-        scriptPath: 'script/user_modal.js',
+        scriptPath: 'script/userModal.js',
         pageTab: 'account',
         users
     });
@@ -47,16 +47,16 @@ privateRouter.get('/getContents', requireLogin, async (req, res) => {
     }
 });
 
-privateRouter.get('/content_manager', requireLogin, async (req, res) => {
+privateRouter.get('/contentManager', requireLogin, async (req, res) => {
 
     try {
 
         const contents = await Content.find().sort({ created_at: -1 });
 
-        res.render('private_views/content_manager', {
+        res.render('private_views/contentManager', {
             pageTitle: 'Content Manager',
             cssPath: 'css/contentmgr.css',
-            scriptPath: 'script/content_manager.js',
+            scriptPath: 'script/contentManager.js',
             pageTab: 'content manager',
             contents
         });

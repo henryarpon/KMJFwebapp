@@ -6,15 +6,14 @@ import flash from 'connect-flash';
 import User from './models/users.js';
 import Content from './models/content.js';
 import bcrypt from 'bcrypt';
-import publicRouter from './public_routes.js';
-import privateRouter from './private_route.js';
+import publicRouter from './publicRoute.js';
+import privateRouter from './privateRoute.js';
 import mongoose from 'mongoose';
-import loginHandler from './controller/loginhandler.js';
-import addUserHandler from './controller/addUserHandler.js';
-import editUserHandler from './controller/editUserHandler.js';
-import deleteUserHandler from './controller/deleteUserHandler.js';
-import submitContentHandler from './controller/submitContentHandler.js';
-
+import login from './controller/login.js';
+import addUser from './controller/addUser.js';
+import editUser from './controller/editUser.js';
+import deleteUser from './controller/deleteUser.js';
+import submitContent from './controller/submitContent.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -51,25 +50,26 @@ app.use('/', publicRouter);
 app.use('/', privateRouter);
 
 //post routes --located in controller directory
-app.post('/login', loginHandler);
-app.post('/addUser', addUserHandler);
-app.post('/editUser', editUserHandler);
-app.post('/deleteUser', deleteUserHandler);
-app.post('/submitContent', submitContentHandler);
+app.post('/login', login);
+app.post('/addUser', addUser);
+app.post('/editUser', editUser);
+app.post('/deleteUser', deleteUser);
+app.post('/submitContent', submitContent);
 
 app.post('/deleteContent', async (req, res) => {
-try {
-const { contentId } = req.body;
+    try {
+        const { contentId } = req.body;
 
-// Find and delete the content document by ID
-await Content.findByIdAndDelete(contentId);
+        // Find and delete the content document by ID
+        await Content.findByIdAndDelete(contentId);
 
-// Redirect the user back to the content manager page
-res.redirect('back');
-} catch (err) {
-console.error(err);
-res.status(500).send('Internal Server Error');
-}
+        // Redirect the user back to the content manager page
+        res.redirect('back');
+    } 
+    catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 
