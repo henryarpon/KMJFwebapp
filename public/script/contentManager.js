@@ -203,12 +203,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     const response = await fetch(`/getContent?contentId=${contentId}`);
 
+                    console.log(response);
+
                     if (!response.ok) {
                         throw new Error('Failed to fetch data');
                     }
 
                     const data = await response.json();
                     console.log('Data:', data);
+                    
+                    console.log(data);
 
                     // Set the values in the form inputs
                     const titleInput = editForm.querySelector('#editTitle');
@@ -217,7 +221,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     titleInput.value = data.title;
                     contentIdInput.value = data._id;
                     editEditor.root.innerHTML = data.content.html;
-
                 } 
                 catch (error) {
                     console.error('Error:', error);
@@ -257,9 +260,6 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(message);
 
             if (message.success) {
-                console.log('reach here')
-                editTitleInput.value = '';
-                contentFormEditor.innerHTML = '';
                 updateContentTable();
                 editUserForm.style.display = 'none';
             }
