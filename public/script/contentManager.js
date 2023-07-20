@@ -1,11 +1,17 @@
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
+
     const contentForm = document.querySelector('#submitContent');
     const contentModal = document.querySelector('#contentModal');
+    const deleteModal = document.querySelector('#deleteModal');
+    const editContent = document.querySelector('#editContent');
+    const closeFormButton = document.getElementById('closeFormButton');
+    const editUserForm = document.getElementById('editForm');
 
-    const quill = new Quill('#editor', {
+    const editorOptions = {
         theme: 'snow',
         modules: {
-            toolbar: [
+        toolbar: 
+            [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ 'align': [] }],
@@ -15,106 +21,257 @@ document.addEventListener("DOMContentLoaded", async () => {
                 ['blockquote', 'code-block'],
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                 ['link', 'image', 'video'],
-            ]
-        }
-    });
+            ],
+    },
+    };
 
-    // Updating the edit/delete table
-    async function updateContentTable() {
+    const submitEditor = new Quill('#submitEditor', editorOptions);
+    const editEditor = new Quill('#editEditor', { ...editorOptions, readOnly: false });
+
+    const showMessage = (container, message, className) => {
+
+        container.innerHTML = `
+            <div class="${className}">${message}</div>
+            <button class="modal-close formButton">OK</button>
+        `;
+
+        const closeButton = container.querySelector('.modal-close');
+
+        closeButton.addEventListener('click', () => {
+            container.parentNode.style.display = 'none';
+
+            if (className === 'success-message') {
+                location.reload();
+            }
+        });
+    };
+
+    const handleApiRequest = async (url, method, data = null) => {
+        try {
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: data ? JSON.stringify(data) : null,
+            };
+
+            const response = await fetch(url, options);
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            return await response.json();
+        } 
+        catch (error) {
+            console.error('Error:', error);
+            throw error;
+        }
+    };
+
+    const updateContentTable = async () => {
+
         try {
             const response = await fetch('/getContents');
 
-            if (response.ok) {
-                const contents = await response.json();
-                const table = document.getElementById('table-card');
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
 
-                // Clear existing table rows
-                table.innerHTML = '';
+            const contents = await response.json();
+            const table = document.getElementById('table-card');
+            table.innerHTML = '';
 
-                // Add new rows for each content
-                contents.forEach(content => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+            contents.forEach(content => {
+                const row = document.createElement('tr');
+                row.innerHTML = 
+                    `
                         <td>${content.title}</td>
-                        <td>
-                            <form action="/editContent" method="POST">
+                        <td class='actionColumn'>
+                            <form class="edit-form">
                                 <input type="hidden" name="contentId" value="${content._id}">
-                                <button type="submit">Edit</button>
+                                <button type="submit" class='formButton'>Edit</button>
                             </form>
                         </td>
-                        <td>
-                            <form action="/deleteContent" method="POST">
+                        <td class='actionColumn'>
+                            <form class="delete-form">
                                 <input type="hidden" name="contentId" value="${content._id}">
-                                <button type="submit">Delete</button>
+                                <button type="submit" class='formButton'>Delete</button>
                             </form>
                         </td>
                     `;
-                    table.appendChild(row);
-                });
-            } 
-            else {
-                console.error('Error:', response.statusText);
-            }
+                table.appendChild(row);
+            });
+            attachDeleteEventListeners();
+            attachEditEventListeners();
         } 
         catch (error) {
             console.error('Error:', error);
         }
     };
+
+    const deleteContent = async (contentId) => {
+    try {
+        const message = await handleApiRequest('/deleteContent', 'POST', { contentId });
       
-    function showMessage(message, className) {
-        const contentContainer = document.querySelector('#content-container');
-        contentContainer.innerHTML = `
-            <div class="${className}">${message}</div>
-            <button class="modal-close">Ok</button>
-        `;
+        showMessage(
+            document.querySelector('#delete-container'),
+            message.message,
+            message.success ? 'delete-message' : 'error-message'
+        );
 
-        const closeButton = contentContainer.querySelector('.modal-close');
-        closeButton.addEventListener('click', () => {
+        deleteModal.style.display = 'block';
+
+        if (message.success) {
             updateContentTable();
-            contentModal.style.display = 'none';
-        });
+        }
+    } 
+    catch (error) {
+        console.error(error);
+        showMessage(document.querySelector('#delete-container'), 'An error occurred', 'error-message');
+        deleteModal.style.display = 'block';
     }
+    };
 
-    contentForm.addEventListener('submit', async (event) => {
+    const attachDeleteEventListeners = () => {
+
+        const deleteForms = document.querySelectorAll('.delete-form');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', event => {
+                event.preventDefault();
+                const contentId = form.querySelector('input[name="contentId"]').value;
+                deleteContent(contentId);
+            });
+        });
+    };
+
+    contentForm.addEventListener('submit', async event => {
+
         event.preventDefault();
-        const content = {
-            html: quill.root.innerHTML,
-            photoUrl: 'your-photo-url'
-        };
-    
         const titleInput = document.querySelector('#title');
-        const contentEditor = document.querySelector('#editor');
-    
+        const contentFormEditor = document.querySelector('#submitEditor');
+
+        const content = {
+            html: submitEditor.root.innerHTML,
+            photoUrl: 'your-photo-url',
+        };
+
         const formData = {
             title: titleInput.value,
-            content: JSON.stringify(content)
+            content: JSON.stringify(content),
         };
-    
+
         try {
-            const response = await fetch('/submitContent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-    
-            if (response.ok) {
-                const successMessage = await response.json();
-                showMessage(successMessage.message, 'success-message');
-                contentModal.style.display = 'block';
-                titleInput.value = ''; 
-                contentEditor.innerHTML = '';
-            } else {
-                const errorMessage = await response.json();
-                showMessage(errorMessage.message, 'error-message');
-                contentModal.style.display = 'block';
+            const message = await handleApiRequest('/submitContent', 'POST', formData);
+
+            showMessage(
+                document.querySelector('#content-container'),
+                message.message,
+                message.success ? 'success-message' : 'error-message'
+            );
+
+            contentModal.style.display = 'block';
+            console.log(message);
+
+            if (message.success) {
+                titleInput.value = '';
+                contentFormEditor.innerHTML = '';
+                updateContentTable();
             }
         } 
         catch (error) {
             console.error(error);
-            showMessage('Error occurred', 'error-message');
+            showMessage(document.querySelector('#content-container'), 'An error occurred', 'error-message');
             contentModal.style.display = 'block';
         }
-    });  
+    });
+
+    const attachEditEventListeners = () => {
+
+        const editForms = document.querySelectorAll('.edit-form');
+        const editForm = document.getElementById('editForm');
+
+        editForms.forEach(form => {
+
+            form.addEventListener('submit', async event => {
+
+                event.preventDefault();
+                const contentId = form.querySelector('input[name="contentId"]').value;
+                editForm.style.display = 'block';
+
+                try {
+                    const response = await fetch(`/getContent?contentId=${contentId}`);
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+
+                    const data = await response.json();
+                    console.log('Data:', data);
+
+                    // Set the values in the form inputs
+                    const titleInput = editForm.querySelector('#editTitle');
+                    const contentIdInput = editForm.querySelector('#editContentInput');
+
+                    titleInput.value = data.title;
+                    contentIdInput.value = data._id;
+                    editEditor.root.innerHTML = data.content.html;
+
+                } 
+                catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    };
+
+    editContent.addEventListener('submit', async event => {
+
+        event.preventDefault();
+        const editTitleInput = document.querySelector('#editTitle');
+        const contentIdInput = document.querySelector('#editContentInput');
+        const contentFormEditor = document.querySelector('#editEditor');
+
+        const content = {
+            html: editEditor.root.innerHTML,
+            photoUrl: 'your-photo-url',
+        };
+
+        const formData = {
+            title: editTitleInput.value,
+            contentId: contentIdInput.value,
+            content: JSON.stringify(content),
+        };
+
+        try {
+            const message = await handleApiRequest('/editContent', 'POST', formData);
+            showMessage(
+                    document.querySelector('#delete-container'),
+                    message.message,
+                    message.success ? 'delete-message' : 'error-message'
+                );
+
+            deleteModal.style.display = 'block';
+
+            console.log(message);
+
+            if (message.success) {
+                console.log('reach here')
+                editTitleInput.value = '';
+                contentFormEditor.innerHTML = '';
+                updateContentTable();
+                editUserForm.style.display = 'none';
+            }
+        } 
+        catch (error) {
+            console.error('Error', error);
+        }
+    });
+
+    updateContentTable();
+
+    closeFormButton.addEventListener('click', function () {
+        editUserForm.style.display = 'none';
+    });
 });

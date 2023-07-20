@@ -1,6 +1,6 @@
 import Content from '../models/content.js'; // Update import path
 
-const submitContentHandler = async (req, res) => {
+const submitContent = async (req, res) => {
     try {
         const { title, content } = req.body;
         const username = req.session.username;
@@ -24,4 +24,4 @@ const submitContentHandler = async (req, res) => {
     }
 };
 
-export default submitContentHandler;
+export default submitContent;

@@ -1,7 +1,7 @@
 import User from '../models/users.js';
 import bcrypt from 'bcrypt';
 
-const editUserHandler = async (req, res) => {
+const editUser = async (req, res) => {
     const { selectUser, newUsername, newPassword, confirmNewPassword } = req.body;
 
     if (newPassword !== confirmNewPassword) {
@@ -43,4 +43,4 @@ const editUserHandler = async (req, res) => {
     }
 };
 
-export default editUserHandler;
+export default editUser;

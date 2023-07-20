@@ -1,36 +1,13 @@
 <%- include('private_partials/privateHeader') %>
 <main class="mdl-layout__content">
     <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
-        <div class="page-content">
-            <%- include('private_partials/forms/submitContent') %>
-        </div>
+        <%- include('private_partials/forms/submitContentForm') %>
     </section>
     <section class="mdl-layout__tab-panel" id="fixed-tab-2">
-        <div class="table-card">
-            <table id="table-card">
-                <tr>
-                    <th>Title</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-                <% contents.forEach(content => { %>
-                    <tr>
-                        <td><%= content.title %></td>
-                        <td>
-                            <form action="/editContent" method="POST">
-                                <input type="hidden" name="contentId" value="<%= content._id %>">
-                                <button type="submit">Edit</button>
-                            </form>
-                        </td>
-                        <td>
-                            <form action="/deleteContent" method="POST">
-                                <input type="hidden" name="contentId" value="<%= content._id %>">
-                                <button type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <% }); %>
-            </table>
+        <%- include('private_partials/forms/editContentForm') %>
+        <%- include('private_partials/forms/contentTableForms') %>
+        <div class="deleteModal modal" id="deleteModal">
+            <div class="modal-content" id="delete-container"></div>
         </div>
     </section>
 </main>

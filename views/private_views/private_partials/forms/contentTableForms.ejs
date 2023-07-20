@@ -1,0 +1,26 @@
+<div class="table-card">
+    <table id="table-card">
+        <tr>
+            <th>Title</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+        <% contents.forEach(content => { %>
+            <tr>
+                <td><%= content.title %></td>
+                <td class="actionColumn">
+                    <form class="edit-form">
+                        <input type="hidden" name="contentId" value="<%= content._id %>">
+                        <button type="submit" class="formButton">Edit</button>
+                    </form>
+                </td>
+                <td class="actionColumn">
+                    <form class="delete-form">
+                        <input type="hidden" name="contentId" value="<%= content._id %>">
+                        <button type="submit" class="formButton">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        <% }); %>
+    </table>
+</div> 

@@ -14,11 +14,15 @@ import addUser from './controller/addUser.js';
 import editUser from './controller/editUser.js';
 import deleteUser from './controller/deleteUser.js';
 import submitContent from './controller/submitContent.js';
+import deleteContent from './controller/deleteContent.js';
+import editContent from './controller/editContent.js';
+
+//********************************************************************************
+//Middlewares for express, flash and ejs view engines 
+//********************************************************************************
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-//Middlewares 
 const app = express();
 const port = 3000;
 
@@ -29,7 +33,9 @@ app.use(express.static(__dirname + "/public"));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
-// Session middleware
+//********************************************************************************
+//SESSION Middleware
+//********************************************************************************
 app.use(session({
     secret: 'your-secret-key',
     resave: false,
@@ -42,38 +48,40 @@ app.use((req, res, next) => {
     next();
 });
 
-//Initiate mongodb database
+//********************************************************************************
+//MongoDB initialization 
+//********************************************************************************
 mongoose.connect('mongodb://localhost:27017/KMJFDBase', {useNewUrlParser: true});
   
 //pages routes
 app.use('/', publicRouter);
 app.use('/', privateRouter);
 
-//post routes --located in controller directory
+
+//********************************************************************************
+//POST routes --located in controller directory
+//********************************************************************************
+
+//********************************************************************************
+//Account Management Modules
+//********************************************************************************
 app.post('/login', login);
 app.post('/addUser', addUser);
 app.post('/editUser', editUser);
 app.post('/deleteUser', deleteUser);
+
+
+//********************************************************************************
+//Content Management Modules
+//********************************************************************************
 app.post('/submitContent', submitContent);
-
-app.post('/deleteContent', async (req, res) => {
-    try {
-        const { contentId } = req.body;
-
-        // Find and delete the content document by ID
-        await Content.findByIdAndDelete(contentId);
-
-        // Redirect the user back to the content manager page
-        res.redirect('back');
-    } 
-    catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
-});
+app.post('/deleteContent', deleteContent);
+app.post('/editContent', editContent);
 
 
-
+//********************************************************************************
+//Server Logging port
+//********************************************************************************
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });

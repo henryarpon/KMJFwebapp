@@ -9,6 +9,11 @@ const contentSchema = new mongoose.Schema({
     updated_at: Date
 });
 
+contentSchema.pre('save', function (next) {
+    this.updated_at = new Date();
+    next();
+});
+
 const Content = mongoose.model('Content', contentSchema);
 
 export default Content;

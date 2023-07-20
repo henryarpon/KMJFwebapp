@@ -1,6 +1,6 @@
 import User from '../models/users.js';
 
-const deleteUserHandler = async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
     const { selectUserDelete } = req.body;
     const deletedUser = await User.deleteOne({ username: selectUserDelete });
@@ -18,4 +18,4 @@ const deleteUserHandler = async (req, res) => {
   }
 };
 
-export default deleteUserHandler;
+export default deleteUser;

@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import User from '../models/users.js';
 
-async function addUserHandler(req, res) {
+const addUser = async (req, res) => {
     const username = req.body.username;
     const emailAddress = req.body.email;
     const userType = req.body.userType;
@@ -42,4 +42,4 @@ async function addUserHandler(req, res) {
     }
 }
 
-export default addUserHandler;
+export default addUser;

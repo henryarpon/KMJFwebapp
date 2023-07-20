@@ -2,7 +2,7 @@
 import bcrypt from 'bcrypt';
 import User from '../models/users.js';
 
-async function loginHandler(req, res) {
+const login = async (req, res) => {
     const { username, password } = req.body;
 
     try {
@@ -33,4 +33,4 @@ async function loginHandler(req, res) {
     }
 }
 
-export default loginHandler;
+export default login;
