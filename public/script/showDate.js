@@ -1,6 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+//********************************************************************************
+//// DOM Element Selection
+//********************************************************************************
 const dateElements = document.querySelectorAll(".date");
 
+//********************************************************************************
+//// Date event listener - updates the format and calculate time passed since posted
+//********************************************************************************
 dateElements.forEach((dateElement) => {
     const createdTimestamp = new Date(dateElement.getAttribute("data-created"));
     const now = new Date();

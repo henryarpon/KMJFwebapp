@@ -1,10 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+
+//********************************************************************************
+//// DOM Element Selection
+//********************************************************************************
     const addUserForm = document.querySelector('#addUser');
     const editUserForm = document.querySelector('#editUser');
     const deleteUserForm = document.querySelector('#deleteUser');
     const addModal = document.querySelector('#addModal');
     const editModal = document.querySelector('#editModal');
     const deleteModal = document.querySelector('#deleteModal');
+
 
     const closeModal = (modal) => {
         modal.classList.remove('modal-show');

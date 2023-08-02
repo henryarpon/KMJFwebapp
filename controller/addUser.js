@@ -2,11 +2,9 @@ import bcrypt from 'bcrypt';
 import User from '../models/users.js';
 
 const addUser = async (req, res) => {
-    const username = req.body.username;
-    const emailAddress = req.body.email;
-    const userType = req.body.userType;
-    const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
+  
+    const { username, emailAddress, userType, password, confirmPassword } = req.body;
+
 
     if (password !== confirmPassword) {
         console.log('password mismatch')

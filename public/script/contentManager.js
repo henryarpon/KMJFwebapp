@@ -1,12 +1,18 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+//********************************************************************************
+//// DOM Element Selection
+//********************************************************************************
     const contentForm = document.querySelector('#submitContent');
     const contentModal = document.querySelector('#contentModal');
     const deleteModal = document.querySelector('#deleteModal');
     const editContent = document.querySelector('#editContent');
-    const closeFormButton = document.getElementById('closeFormButton');
-    const editUserForm = document.getElementById('editForm');
+    const closeFormButton = document.querySelector('#closeFormButton');
+    const editUserForm = document.querySelector('#editForm');
 
+//********************************************************************************
+////Quill rich text editor library configuration
+//********************************************************************************
     const editorOptions = {
         theme: 'snow',
         modules: {
@@ -22,9 +28,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                 ['link', 'image', 'video'],
             ],
-    },
+        },
     };
 
+
+//********************************************************************************
+////Function to show messages in modals
+//********************************************************************************
     const submitEditor = new Quill('#submitEditor', editorOptions);
     const editEditor = new Quill('#editEditor', { ...editorOptions, readOnly: false });
 
@@ -46,6 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+//********************************************************************************
+////Backend API Call handler
+//********************************************************************************
     const handleApiRequest = async (url, method, data = null) => {
         try {
             const options = {
@@ -70,6 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+//********************************************************************************
+////Content Table Updater -- update table for any changes made
+//********************************************************************************
     const updateContentTable = async () => {
 
         try {
@@ -111,6 +127,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+//********************************************************************************
+////Content Deleter
+//********************************************************************************
     const deleteContent = async (contentId) => {
     try {
         const message = await handleApiRequest('/deleteContent', 'POST', { contentId });
@@ -134,6 +153,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     };
 
+//********************************************************************************
+////Attach delete functionality to all delete button generated on the content table
+//********************************************************************************
     const attachDeleteEventListeners = () => {
 
         const deleteForms = document.querySelectorAll('.delete-form');
@@ -146,6 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+//********************************************************************************
+////Event listener for submitting content to the backend
+//********************************************************************************
     contentForm.addEventListener('submit', async event => {
 
         event.preventDefault();
@@ -187,6 +212,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+//********************************************************************************
+////Attached event listener to edit forms generated on the content table
+//********************************************************************************
     const attachEditEventListeners = () => {
 
         const editForms = document.querySelectorAll('.edit-form');
@@ -229,6 +257,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+//********************************************************************************
+////Event listener for editing content 
+//********************************************************************************
     editContent.addEventListener('submit', async event => {
 
         event.preventDefault();
@@ -269,6 +300,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+//********************************************************************************
+////Initial table update and close form button event listener
+//********************************************************************************
     updateContentTable();
 
     closeFormButton.addEventListener('click', function () {

@@ -1,8 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+//********************************************************************************
+//// DOM Element Selection
+//********************************************************************************
     const loginForm = document.querySelector('#login');
     const modal = document.querySelector('#modal');
     const messageContainer = document.querySelector('#message-container');
 
+//********************************************************************************
+//// Log-in form event listener
+//********************************************************************************
     loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -44,6 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+//********************************************************************************
+//// Log-in pop-up modal event listener
+//********************************************************************************
     modal.addEventListener('click', (event) => {
         if (event.target.classList.contains('modal-close')) {
             event.preventDefault();

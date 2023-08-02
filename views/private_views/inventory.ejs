@@ -1,0 +1,42 @@
+<%- include('private_partials/privateHeader') %>
+            <main class="mdl-layout__content">
+                <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+                    <%- include('private_partials/forms/inventoryTableForm') %>
+                </section>
+                <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+                    <div class="page-content">
+                        
+                    </div>
+                </section>
+            </main>
+            <!--Modal Container-->
+            <%- include('private_partials/forms/addInventoryForm') %>
+            <%- include('private_partials/forms/editInventoryForm') %>
+
+            <div id="cartModalContainer" class="modal-container">
+                <span class="close-button" id="cartForm-closeButton">&times;</span>
+                <h2>Cart</h2>
+                <form id="cartForm">
+
+                    <div id="productNameContainer">
+                        <input type="hidden" id="cartItemId" name="cartItemId">
+                        <p id="productName" class="cartFormTag"><!-- Insert the product name here--></p>
+                    </div>
+                    
+                    <label for="itemQuantity" class="cartFormTag">Quantity:</label>
+                    <div class="quantity-input">
+                        <button type="button" id="decreaseButton">-</button>
+                        <input type="number" id="itemQuantity" name="itemQuantity" min="1" value="1">
+                        <button type="button" id="increaseButton">+</button>
+                    </div>
+                    <button type="submit" class="inventoryButton">Add to Cart</button>
+                </form>
+            </div>
+            
+            <div id="overlay"></div>
+            <script>
+                const userType = '<%= userType %>';
+            </script>
+        </div>
+    </body>
+</html> 

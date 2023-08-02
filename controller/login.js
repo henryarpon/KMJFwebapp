@@ -20,6 +20,7 @@ const login = async (req, res) => {
             // Store the user's ID in the session
             req.session.userId = user._id;
             req.session.username = user.username;
+            req.session.userType = user.user_type;
 
             // Redirect to the private page (e.g., dashboard)
             return res.json({ success: true, redirectUrl: '/dashboard' });
