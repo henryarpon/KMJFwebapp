@@ -1,0 +1,23 @@
+<div id="cartModalContainer" class="modal-container">
+    <span class="close-button" id="cartForm-closeButton">&times;</span>
+    <h4>Order Details</h4>
+    <form id="cartForm">
+        <div id="productNameContainer">
+            <input type="hidden" id="cartItemId" value="">
+            <p id="productName" class="cartFormTag"><!-- Insert the product name here--></p>
+        </div>
+
+        <div id="priceContainer">
+            <input type="hidden" id="orderCost" value="">
+            <p id="sellingPriceDisplay" class="cartFormTag"><!-- Insert the selling price here--></p>
+        </div>
+        
+        <label for="itemQuantity" class="cartFormTag">Quantity:</label>
+        <div class="quantity-input">
+            <button type="button" id="decreaseButton">-</button>
+            <input type="number" id="itemQuantity" name="itemQuantity" min="1" value="1">
+            <button type="button" id="increaseButton">+</button>
+        </div>
+        <button type="submit" class="inventoryButton">Add to Cart</button>
+    </form>
+</div>

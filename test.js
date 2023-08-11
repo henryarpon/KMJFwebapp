@@ -1,39 +1,39 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    
+
 //********************************************************************************
 //// DOM Element Selection
 //********************************************************************************
-    const toggleButton = document.querySelector('#toggleInventoryForm');
-    const modalContainer = document.querySelector('#modalContainer');
-    const editModalContainer = document.querySelector('#editModalContainer');
-    const cartModalContainer = document.querySelector('#cartModalContainer');
-    const overlay = document.querySelector('#overlay');
-    const addFormCloseButton = document.querySelector('#addForm-closeButton');
-    const editFormCloseButton = document.querySelector('#editForm-closeButton');
-    const cartFormCloseButton = document.querySelector('#cartForm-closeButton');
-    const addInventoryForm = document.querySelector('#addInventoryForm');
-    const editInventoryForm = document.querySelector('#editInventoryForm');
-    const editProductNameInput = document.querySelector('#editProductName');
-    const editReceivedQuantityInput = document.querySelector('#editReceivedQuantity');
-    const editQuantityInStockInput = document.querySelector('#editQuantityInStock');
-    const editCostPriceInput = document.querySelector('#editCostPrice');
-    const editSellingPriceInput = document.querySelector('#editSellingPrice');
-    const editSupplierInput = document.querySelector('#editSupplier');
-    const editSKUInput = document.querySelector('#editSKU');
-    const editDescriptionInput = document.querySelector('#editDescription');
-    const editFormItemIdInput = document.querySelector('#editFormItemId');
-    const cartItemId = document.querySelector('#cartItemId');
-    const orderCost = document.querySelector('#orderCost');
-    const deleteButton = document.querySelector('#deleteButton');
-    const decreaseButton = document.querySelector('#decreaseButton');
-    const increaseButton = document.querySelector('#increaseButton');
-    const itemQuantityInput = document.querySelector('#itemQuantity');
-    const cartForm = document.querySelector('#cartForm');
-    const sellingPriceDisplay = document.querySelector('#sellingPriceDisplay');
-    const cartItemsElements = document.querySelector('#cartItems');
-    const cartTotalPriceElement = document.querySelector('#cartTotalPrice');
-    const checkoutBtn = document.querySelector('#checkoutBtn');
- 
+    const toggleButton = document.getElementById('toggleInventoryForm');
+    const modalContainer = document.getElementById('modalContainer');
+    const editModalContainer = document.getElementById('editModalContainer');
+    const cartModalContainer = document.getElementById('cartModalContainer');
+    const overlay = document.getElementById('overlay');
+    const addFormCloseButton = document.getElementById('addForm-closeButton');
+    const editFormCloseButton = document.getElementById('editForm-closeButton');
+    const cartFormCloseButton = document.getElementById('cartForm-closeButton');
+    const addInventoryForm = document.getElementById('addInventoryForm');
+    const editInventoryForm = document.getElementById('editInventoryForm');
+    const editProductNameInput = document.getElementById('editProductName');
+    const editReceivedQuantityInput = document.getElementById('editReceivedQuantity');
+    const editQuantityInStockInput = document.getElementById('editQuantityInStock');
+    const editCostPriceInput = document.getElementById('editCostPrice');
+    const editSellingPriceInput = document.getElementById('editSellingPrice');
+    const editSupplierInput = document.getElementById('editSupplier');
+    const editSKUInput = document.getElementById('editSKU');
+    const editDescriptionInput = document.getElementById('editDescription');
+    const editFormItemIdInput = document.getElementById('editFormItemId');
+    const cartItemId = document.getElementById('cartItemId');
+    const orderCost = document.getElementById('orderCost');
+    const deleteButton = document.getElementById('deleteButton');
+    const decreaseButton = document.getElementById('decreaseButton');
+    const increaseButton = document.getElementById('increaseButton');
+    const itemQuantityInput = document.getElementById('itemQuantity');
+    const cartForm = document.getElementById('cartForm');
+    const sellingPriceDisplay = document.getElementById('sellingPriceDisplay');
+    const cartItemsElements = document.getElementById('cartItems');
+    const cartTotalPriceElement = document.getElementById('cartTotalPrice');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    
 //********************************************************************************
 ////Display add Inventory form 
 //********************************************************************************
@@ -125,16 +125,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             const response = await fetch('/getCartItems');
             const cartItems = await response.json();
 
-            cartItemsElements.innerHTML = '';
+            while (cartItemsElements.firstChild) {
+                cartItemsElements.removeChild(cartItemsElements.firstChild);
+            }
 
             cartItems.forEach(item => {
                 const itemDiv = document.createElement('div');
                 itemDiv.classList.add('cartItemCard');
-                itemDiv.innerHTML = `
+                itemDiv.insertAdjacentHTML('beforeend', `
                     <input type="checkbox" name="cartItem" value="${item.itemId}">
                     <p><span>${item.quantity}x</span> ${item.productName}</p>
                     <p class="total-price"><strong>Total Price:</strong> ${formatAsMoney(item.totalPrice)}</p>
-                `;
+                `);
 
                 cartItemsElements.appendChild(itemDiv);
             });
@@ -389,7 +391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 //********************************************************************************
     cartForm.addEventListener('submit', async (event) => {
         event.preventDefault(); 
- 
+    
         const formData = {
             itemId : cartItemId.value,
             itemQuantity: itemQuantityInput.value,
@@ -528,27 +530,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 //********************************************************************************
 ////checkboxes event listener to display total price
 //********************************************************************************
-cartItemsElements.addEventListener('change', function(event) {
-    if (event.target.type === 'checkbox' && event.target.name === 'cartItem') {
-        const checkedCheckboxes = cartItemsElements.querySelectorAll('input[name="cartItem"]:checked');
-        let totalPrice = 0;
+    cartItemsElements.addEventListener('change', function(event) {
+        if (event.target.type === 'checkbox' && event.target.name === 'cartItem') {
+            const checkedCheckboxes = cartItemsElements.querySelectorAll('input[name="cartItem"]:checked');
+            let totalPrice = 0;
 
-        checkedCheckboxes.forEach(checkbox => {
-            const itemDiv = checkbox.closest('.cartItemCard');
-            const totalPriceElement = itemDiv.querySelector('.total-price');
-            const totalPriceText = totalPriceElement.textContent;
+            checkedCheckboxes.forEach(checkbox => {
+                const itemDiv = checkbox.closest('.cartItemCard');
+                const totalPriceElement = itemDiv.querySelector('.total-price');
+                const totalPriceText = totalPriceElement.textContent;
 
-            // Extract the numeric value by removing "Total Price:" and trimming spaces
-            const numericValue = parseFloat(totalPriceText.replace(/[^0-9.-]+/g,""));
+                // Extract the numeric value by removing "Total Price:" and trimming spaces
+                const numericValue = parseFloat(totalPriceText.replace(/[^0-9.-]+/g,""));
 
-            if (!isNaN(numericValue)) {
-                totalPrice += numericValue;
-            }
-        });
+                if (!isNaN(numericValue)) {
+                    totalPrice += numericValue;
+                }
+            });
 
-        cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsMoney(totalPrice)}</p>`;
-    }
+            cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsMoney(totalPrice)}</p>`;
+        }
+    });
 });
-
-});
-
