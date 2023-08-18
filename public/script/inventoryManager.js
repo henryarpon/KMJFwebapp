@@ -279,49 +279,67 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     async function handleCartButtonClick(cartButton) {
-        const table = $('#myTable').DataTable();
-        const rowData = table.row(cartButton.closest('tr')).data();
         const itemId = rowData._id;
-        orderCost.value = rowData.selling_price;
-        
+        const table = $('#myTable').DataTable();
         const inventoryItem = await fetchData(itemId);
+        const rowData = table.row(cartButton.closest('tr')).data();
 
+        orderCost.value = rowData.selling_price;
+    
         if (inventoryItem) {
-            
-            // Display the product name in the HTML form
+            console.log(inventoryItem);
             const productNameElement = document.querySelector('#productName');
             cartItemId.value = itemId;
             let itemQuantity = itemQuantityInput.value;
-
+    
             productNameElement.textContent = `Product Name: ${inventoryItem.product_name}`;
             sellingPriceDisplay.textContent = `Total Value: Php ${inventoryItem.selling_price}`;
-
-            decreaseButton.addEventListener('click', () => {
-
-                if (itemQuantity > 1) {
-                    itemQuantity--;
-                    itemQuantityInput.value = itemQuantity;
-                    totalPrice = calculateTotalValue(itemQuantityInput.value, inventoryItem.selling_price);
-                    sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
-                    orderCost.value = totalPrice;
-                }
-            });
-            
-            increaseButton.addEventListener('click', () => {
-
-                if (itemQuantity < inventoryItem.quantity_inStock) {
-                    itemQuantity++;
-                    itemQuantityInput.value = itemQuantity;
-                    totalPrice = calculateTotalValue(itemQuantityInput.value, inventoryItem.selling_price);
-                    sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
-                    orderCost.value = totalPrice;
-                }
-            });
-            
+    
+            itemQuantityInput.addEventListener('input', handleItemQuantityInput);
+            decreaseButton.addEventListener('click', handleDecreaseButtonClick);
+            increaseButton.addEventListener('click', handleIncreaseButtonClick);
+    
             cartModalContainer.style.display = 'block';
             overlay.style.display = 'block';
-        };
+        }
+    
+        function handleItemQuantityInput() {
+            const enteredQuantity = parseInt(itemQuantityInput.value);
+    
+            if (enteredQuantity > inventoryItem.quantity_inStock) {
+                itemQuantityInput.value = inventoryItem.quantity_inStock;
+            } else if (enteredQuantity < 1) {
+                itemQuantityInput.value = 1;
+            } else {
+                itemQuantity = enteredQuantity;
+            }
+    
+            updateTotalValue();
+        }
+    
+        function handleDecreaseButtonClick() {
+            if (itemQuantity > 1) {
+                itemQuantity--;
+                itemQuantityInput.value = itemQuantity;
+                updateTotalValue();
+            }
+        }
+    
+        function handleIncreaseButtonClick() {
+            if (itemQuantity < inventoryItem.quantity_inStock) {
+                itemQuantity++;
+                itemQuantityInput.value = itemQuantity;
+                updateTotalValue();
+            }
+        }
+    
+        function updateTotalValue() {
+            totalPrice = calculateTotalValue(itemQuantity, inventoryItem.selling_price);
+            sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
+            orderCost.value = totalPrice;
+        }
     };
+
 
 //********************************************************************************
 ////Edit inventory form submission
@@ -389,7 +407,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 //********************************************************************************
     cartForm.addEventListener('submit', async (event) => {
         event.preventDefault(); 
- 
         const formData = {
             itemId : cartItemId.value,
             itemQuantity: itemQuantityInput.value,
@@ -525,30 +542,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error during checkout:', error);
         }
     });
+
+    
 //********************************************************************************
 ////checkboxes event listener to display total price
 //********************************************************************************
-cartItemsElements.addEventListener('change', function(event) {
-    if (event.target.type === 'checkbox' && event.target.name === 'cartItem') {
-        const checkedCheckboxes = cartItemsElements.querySelectorAll('input[name="cartItem"]:checked');
-        let totalPrice = 0;
+    cartItemsElements.addEventListener('change', function(event) {
+        if (event.target.type === 'checkbox' && event.target.name === 'cartItem') {
+            const checkedCheckboxes = cartItemsElements.querySelectorAll('input[name="cartItem"]:checked');
+            let totalPrice = 0;
 
-        checkedCheckboxes.forEach(checkbox => {
-            const itemDiv = checkbox.closest('.cartItemCard');
-            const totalPriceElement = itemDiv.querySelector('.total-price');
-            const totalPriceText = totalPriceElement.textContent;
+            checkedCheckboxes.forEach(checkbox => {
+                const itemDiv = checkbox.closest('.cartItemCard');
+                const totalPriceElement = itemDiv.querySelector('.total-price');
+                const totalPriceText = totalPriceElement.textContent;
 
-            // Extract the numeric value by removing "Total Price:" and trimming spaces
-            const numericValue = parseFloat(totalPriceText.replace(/[^0-9.-]+/g,""));
+                // Extract the numeric value by removing "Total Price:" and trimming spaces
+                const numericValue = parseFloat(totalPriceText.replace(/[^0-9.-]+/g,""));
 
-            if (!isNaN(numericValue)) {
-                totalPrice += numericValue;
-            }
-        });
+                if (!isNaN(numericValue)) {
+                    totalPrice += numericValue;
+                }
+            });
 
-        cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsMoney(totalPrice)}</p>`;
-    }
-});
+            cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsMoney(totalPrice)}</p>`;
+        }
+    });
 
 });
 

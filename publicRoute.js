@@ -14,7 +14,7 @@ publicRouter.get('/gallery', (req, res) => {
 publicRouter.get('/content', async (req, res) => {
   try {
     const contents = await Content.find().sort({ created_at: -1 });
-    
+    console.log(contents);
     res.render('public_views/content', { contents });
   } 
   catch (err) {
