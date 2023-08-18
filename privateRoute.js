@@ -1,6 +1,7 @@
 import User from './models/users.js';
 import Content from './models/content.js';
 import Inventory from './models/inventory.js';
+import Cart from './models/cart.js';
 import requireLogin from './authenticationMiddleware.js';
 import requireAdmin from './authorizationMiddleware.js';
 import express from 'express';
@@ -79,6 +80,39 @@ privateRouter.get('/getInventoryItem/:itemId', requireLogin, async (req, res) =>
 
     return res.json(inventoryItem);
 });
+
+privateRouter.get('/getCartItems', requireLogin, async (req, res) => {
+    try {
+        // Find all cart items and populate the inventoryItem field with product details
+        const cartItems = await Cart.find({})
+            .populate('inventoryItem', 'product_name')
+            .exec();
+
+        // Map the retrieved cart items to the desired format
+        const formattedCartItems = cartItems.map(cartItem => {
+        const productName = cartItem.inventoryItem ? cartItem.inventoryItem.product_name : 'Unknown Product';
+        const inventoryId = cartItem.inventoryItem ? cartItem.inventoryItem._id : 'Unknown Product';
+
+            return {
+                itemId: cartItem._id,
+                inventoryId: inventoryId,
+                productName: productName,
+                quantity: cartItem.quantity,
+                totalPrice: cartItem.totalPrice
+            };
+        });
+
+        if (formattedCartItems.length === 0) {
+            // Return an empty array when no cart items are found
+            res.json([]);
+        } else {
+            res.json(formattedCartItems);
+        }
+    } catch (error) {
+        console.error('Error fetching cart items:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+})
 
 //logout route
 privateRouter.get('/logout', requireLogin,(req, res) => {

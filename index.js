@@ -22,6 +22,8 @@ import editContent from './controller/editContent.js';
 import addInventory from './controller/addInventory.js';
 import editInventoryItem from './controller/editInventory.js';
 import deleteInventoryItem from './controller/deleteInventory.js';
+import addToCart from './controller/addToCart.js';
+import removeFromCart from './controller/removeFromCart.js';
 import requireAdmin from "./authorizationMiddleware.js";
 import axios from 'axios';
 
@@ -94,87 +96,8 @@ app.post('/editContent', editContent);
 app.post('/addInventory', addInventory);
 app.post('/editInventoryItem', editInventoryItem);
 app.post('/deleteInventoryItem/:itemId', deleteInventoryItem);
-
-app.post('/addToCart', async (req, res) => {
-    try {
-        const { itemId, itemQuantity, totalPrice } = req.body;
-
-        const parsedQuantity = parseInt(itemQuantity);
-        const parsedTotalPrice = parseFloat(totalPrice);
-        
-        // Check if a cart item with the same itemId already exists
-        const existingCartItem = await Cart.findOne({ inventoryItem: itemId });
-
-        console.log(existingCartItem);
-
-        if (existingCartItem) {
-            // Update the existing cart item's quantity and totalPrice
-            existingCartItem.quantity += parsedQuantity;
-            existingCartItem.totalPrice += parsedTotalPrice;
-
-            await existingCartItem.save();
-        } else {
-            // Create a new cart item if it doesn't exist
-            const newCartItem = new Cart({
-                inventoryItem: itemId,
-                totalPrice: totalPrice,
-                quantity: itemQuantity,
-                created_at: new Date(),
-                updated_at: new Date()
-            });
-
-            await newCartItem.save();
-        }
-
-        return res.json({ message: 'Item added to cart successfully' });
-    } catch (error) {
-        console.error('Error adding item to cart:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-app.get('/getCartItems', async (req, res) => {
-    try {
-        // Find all cart items and populate the inventoryItem field with product details
-        const cartItems = await Cart.find({})
-            .populate('inventoryItem', 'product_name')
-            .exec();
-
-        // Map the retrieved cart items to the desired format
-        const formattedCartItems = cartItems.map(cartItem => {
-        const productName = cartItem.inventoryItem ? cartItem.inventoryItem.product_name : 'Unknown Product';
-        const inventoryId = cartItem.inventoryItem ? cartItem.inventoryItem._id : 'Unknown Product';
-
-            return {
-                itemId: cartItem._id,
-                inventoryId: inventoryId,
-                productName: productName,
-                quantity: cartItem.quantity,
-                totalPrice: cartItem.totalPrice
-            };
-        });
-
-        res.json(formattedCartItems);
-    } catch (error) {
-        console.error('Error fetching cart items:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-app.post('/removeFromCart', async (req, res) => {
-    try {
-        const { items } = req.body;
-
-        // Remove cart items with the provided item IDs
-        await Cart.deleteMany({ _id : { $in: items } });
-
-        return res.json({ message: 'Items removed from cart successfully' });
-    } 
-    catch (error) {
-        console.error('Error removing items from cart:', error);
-        return res.json({ error: 'Internal server error' });
-    }
-});
+app.post('/addToCart', addToCart);
+app.post('/removeFromCart', removeFromCart);
 
 // app.post('/checkout', async (req, res) => {
 //     try {
@@ -191,8 +114,24 @@ app.post('/removeFromCart', async (req, res) => {
 //         // Save the new sales document to the database
 //         await newSales.save();
 
+//         // Deduct sold quantities from inventory
+//         for (const item of salesData.items) {
+//             console.log(item);
+//             const inventoryItem = await Inventory.findOne({ product_name: item.productName });
+
+//             if (inventoryItem) {
+//                 inventoryItem.quantity_inStock -= item.quantity;
+//                 await inventoryItem.save();
+//             }
+            
+//             if (inventoryItem.quantity_inStock <= 0) {
+//                 await axios.post(`http://localhost:3000/deleteInventoryItem/${item.inventoryId}`); 
+//             }
+
+//         }
+
 //         // Return a success response
-//         res.status(201).json({ message: 'Sales data saved successfully' });
+//         res.status(201).json({ message: 'Sales data saved and inventory updated successfully' });
 //     } catch (error) {
 //         console.error('Error proceeding to checkout:', error);
 //         return res.status(500).json({ error: 'Internal server error' });
@@ -214,10 +153,13 @@ app.post('/checkout', async (req, res) => {
         // Save the new sales document to the database
         await newSales.save();
 
-        // Deduct sold quantities from inventory
+        // Fetch all inventory items using $in operator
+        const productNames = salesData.items.map(item => item.productName);
+        const inventoryItems = await Inventory.find({ product_name: { $in: productNames } });
+
+        // Update inventory quantities
         for (const item of salesData.items) {
-            console.log(item);
-            const inventoryItem = await Inventory.findOne({ product_name: item.productName });
+            const inventoryItem = inventoryItems.find(item => item.product_name === item.product_name);
 
             if (inventoryItem) {
                 inventoryItem.quantity_inStock -= item.quantity;
@@ -227,7 +169,7 @@ app.post('/checkout', async (req, res) => {
             if (inventoryItem.quantity_inStock <= 0) {
                 await axios.post(`http://localhost:3000/deleteInventoryItem/${item.inventoryId}`); 
             }
-
+                
         }
 
         // Return a success response
