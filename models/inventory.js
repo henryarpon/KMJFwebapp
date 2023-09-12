@@ -8,7 +8,8 @@ const inventorySchema = new mongoose.Schema({
     selling_price: Number,
     supplier: String,
     sku: String,
-    description: String,
+    reorderPoint: Number,
+    documentNumber: String,
     created_at: Date,
     updated_at: Date
 });

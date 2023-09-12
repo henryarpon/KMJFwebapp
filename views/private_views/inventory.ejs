@@ -1,6 +1,7 @@
 <%- include('private_partials/privateHeader') %>
             <main class="mdl-layout__content">
                 <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+                    <button id="addInventoryFormButton">Add Inventory</button>
                     <%- include('private_partials/forms/inventoryTableForm') %>
                 </section>
                 <section class="mdl-layout__tab-panel" id="fixed-tab-2">
@@ -13,8 +14,8 @@
                                 <p>Total Price: &#8369;0.00</p>
                             </div>
                             <hr>
-                            <button id="checkoutBtn" class="cartButton">Proceed to Checkout</button>
-                            <button id="removeBtn" class="cartButton">Remove Selected Item/s</button>
+                            <button id="pos-checkout-button" class="cartButton">Proceed to Checkout</button>
+                            <button id="pos-remove-button" class="cartButton">Remove Selected Item/s</button>
                         </div>
                     </div>
                 </section>

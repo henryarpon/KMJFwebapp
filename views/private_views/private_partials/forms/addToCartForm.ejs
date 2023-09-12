@@ -4,7 +4,7 @@
     <form id="cartForm">
         <div id="productNameContainer">
             <input type="hidden" id="cartItemId" value="">
-            <p id="productName" class="cartFormTag"><!-- Insert the product name here--></p>
+            <p id="productNameDisplay" class="cartFormTag"><!-- Insert the product name here--></p>
         </div>
 
         <div id="priceContainer">
@@ -13,7 +13,7 @@
         </div>
         
         <label for="itemQuantity" class="cartFormTag">Quantity:</label>
-        <div class="quantity-input">
+        <div id="quantity-input-element" class="quantity-input">
             <button type="button" id="decreaseButton">-</button>
             <input type="number" id="itemQuantity" name="itemQuantity" min="1" value="1">
             <button type="button" id="increaseButton">+</button>

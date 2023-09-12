@@ -4,9 +4,11 @@
         <div class="form-group">
             <label for="selectUser">Select User:</label>
             <select id="selectUser" name="selectUser" required>
-                <% users.forEach((user) => { %>
-                    <option value="<%= user.username %>"><%= user.username %></option>
-                <% }); %>
+                <% users.forEach((user)=> { %>
+                    <option value="<%= user.username %>">
+                        <%= user.username %>
+                    </option>
+                    <% }); %>
             </select>
         </div>
         <div class="form-group">
@@ -26,5 +28,5 @@
     </form>
     <div class="editModal modal" id="editModal">
         <div class="modal-content" id="edit-container"> </div>
-    </div>  
+    </div>
 </div>

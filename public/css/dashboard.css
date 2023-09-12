@@ -1,3 +1,97 @@
-h1 {
-    font-size: 1em;
+section.dashboard {
+    padding: 50px;
+    display: grid;
+    grid-template-columns: 20% 1fr; /* Two columns, left column 20% width, right column takes the rest */
+    align-items: flex-start;
 }
+
+.left-column {
+    /* No need to specify width here */
+    display: grid;
+    gap: 20px; /* Add some spacing between cards */
+}
+
+.right-column {
+    /* No need to specify width or height here */
+    margin-left: 20px;
+    padding: 30px;
+    height: 540px; 
+    border-radius: 8px; 
+    background-color: #f0f5ff; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.float-right-span {
+    float: right;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    height: 250px;
+}
+
+#salesChartContainer {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* form style */
+form {
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.filter {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+input[type="date"],
+input[type="month"] {
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+button[type="submit"] {
+    margin-top: 10px;
+    width: 100%;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #ccc; /* Change the background color to gray */
+    color: #888; /* Change the text color to a lighter gray */
+    cursor: not-allowed; /* Change the cursor to indicate it's not clickable */
+    /* You can add more styles as needed */
+}
+
+.daily-filter,
+.weekly-filter {
+    display: none;
+}
+

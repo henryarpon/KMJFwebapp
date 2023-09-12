@@ -1,67 +1,77 @@
 async function handleCartButtonClick(cartButton) {
-    const table = $('#myTable').DataTable();
-    const rowData = table.row(cartButton.closest('tr')).data();
-    const itemId = rowData._id;
-    orderCost.value = rowData.selling_price;
-    
-    const inventoryItem = await fetchData(itemId);
+    quantityInputListener = false; // Reset the listener flag
 
-    if (inventoryItem) {
-        
-        // Display the product name in the HTML form
-        console.log(inventoryItem);
-        const productNameElement = document.querySelector('#productName');
-        cartItemId.value = itemId;
-        let itemQuantity = itemQuantityInput.value;
+    console.log(quantityInputListener);
 
-        productNameElement.textContent = `Product Name: ${inventoryItem.product_name}`;
-        sellingPriceDisplay.textContent = `Total Value: Php ${inventoryItem.selling_price}`;
+    const table = new DataTable(inventoryTable);
+    const rowData = table.row(cartButton.closest("tr")).data();
+    console.log(rowData.quantity_inStock);
 
-        itemQuantityInput.addEventListener('input', () => {
-            const enteredQuantity = parseInt(itemQuantityInput.value);
-            
-            if (enteredQuantity > inventoryItem.quantity_inStock) {
-                // If entered quantity is greater than available stock
-                itemQuantityInput.value = inventoryItem.quantity_inStock; // Set input value to max stock
-            } else if (enteredQuantity < 1) {
-                // If entered quantity is less than 1
-                itemQuantityInput.value = 1; // Set input value to minimum 1
-            } else {
-                // Valid quantity entered
-                itemQuantity = enteredQuantity;
-            }
-        
-            // Update total value and other relevant displays
-            totalPrice = calculateTotalValue(itemQuantity, inventoryItem.selling_price);
-            sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
-            orderCost.value = totalPrice;
-        });
+    cartModalContainer.style.display = "block";
+    overlay.style.display = "block";
 
-        decreaseButton.addEventListener('click', () => {
+    if (rowData) {
+        productNameDisplay.textContent = `Product Name: ${rowData.product_name}`;
+        sellingPriceDisplay.textContent = `Total Value: ${formatAsPhCurrency(rowData.selling_price)}`;
+        cartItemId.value = rowData._id;
+        orderCost.value = rowData.selling_price;
 
-            if (itemQuantity > 1) {
-                itemQuantity--;
-                itemQuantityInput.value = itemQuantity;
-                totalPrice = calculateTotalValue(itemQuantityInput.value, inventoryItem.selling_price);
-                sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
-                orderCost.value = totalPrice;
-            }
-        });
+        const quantityInput = document.getElementById(
+            "quantity-input-element"
+        );
 
-        increaseButton.addEventListener('click', () => {
+        // Check if the event listener is already attached before adding it
+        if (!quantityButtonsListener) {
+            quantityInput.addEventListener("click", (event) => {
+                const target = event.target.id;
 
-            if (itemQuantity < inventoryItem.quantity_inStock) {
-                itemQuantity++;
-                itemQuantityInput.value = itemQuantity;
-                totalPrice = calculateTotalValue(itemQuantityInput.value, inventoryItem.selling_price);
-                sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
-                orderCost.value = totalPrice;
-            }
-        });
+                if (target === "increaseButton") {
+                    if (parseInt(itemQuantity.value) < rowData.quantity_inStock) {
+                        itemQuantity.value++;
+                        // updateTotalValue();
+                    }
+                } 
+                else if (target === "decreaseButton") {
+                    if (parseInt(itemQuantity.value) > 1) {
+                        itemQuantity.value--;
+                        // updateTotalValue();
+                    }
+                }
+            });
+            quantityButtonsListener = true;
+        }
 
-        
-        
-        cartModalContainer.style.display = 'block';
-        overlay.style.display = 'block';
-    };
-};
+        if (!quantityInputListener) {
+            quantityInput.addEventListener("input", (event) => {
+                console.log(rowData.quantity_inStock);
+                const target = event.target.id;
+                if (target === "itemQuantity") {
+                    const inputQuantity = itemQuantity.value ? parseInt(itemQuantity.value) : itemQuantity.value;
+
+                    if (inputQuantity > rowData.quantity_inStock) {
+                        itemQuantity.value = rowData.quantity_inStock;
+                        console.log(rowData.quantity_inStock);
+                        updateTotalValue();
+                    } else if (inputQuantity < 1) {
+                        itemQuantity.value = 1;
+                        updateTotalValue();
+                    } else {
+                        itemQuantity.value = inputQuantity;
+                        updateTotalValue();
+                    }
+                }
+            });
+            quantityInputListener = true;
+        }
+    }
+
+    function updateTotalValue() {
+        totalPrice = calculateTotalValue(
+            itemQuantity.value,
+            orderCost.value
+        );
+        const formattedPrice = formatAsPhCurrency(totalPrice);
+        sellingPriceDisplay.textContent = `Total Value: ${formattedPrice}`;
+        cartTotalPrice = totalPrice;
+    }
+}

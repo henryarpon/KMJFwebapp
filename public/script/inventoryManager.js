@@ -1,394 +1,638 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    
+document.addEventListener("DOMContentLoaded", async () => {
 //********************************************************************************
-//// DOM Element Selection
+////Variables Declartions
 //********************************************************************************
-    const toggleButton = document.querySelector('#toggleInventoryForm');
-    const modalContainer = document.querySelector('#modalContainer');
-    const editModalContainer = document.querySelector('#editModalContainer');
-    const cartModalContainer = document.querySelector('#cartModalContainer');
-    const overlay = document.querySelector('#overlay');
-    const addFormCloseButton = document.querySelector('#addForm-closeButton');
-    const editFormCloseButton = document.querySelector('#editForm-closeButton');
-    const cartFormCloseButton = document.querySelector('#cartForm-closeButton');
-    const addInventoryForm = document.querySelector('#addInventoryForm');
-    const editInventoryForm = document.querySelector('#editInventoryForm');
-    const editProductNameInput = document.querySelector('#editProductName');
-    const editReceivedQuantityInput = document.querySelector('#editReceivedQuantity');
-    const editQuantityInStockInput = document.querySelector('#editQuantityInStock');
-    const editCostPriceInput = document.querySelector('#editCostPrice');
-    const editSellingPriceInput = document.querySelector('#editSellingPrice');
-    const editSupplierInput = document.querySelector('#editSupplier');
-    const editSKUInput = document.querySelector('#editSKU');
-    const editDescriptionInput = document.querySelector('#editDescription');
-    const editFormItemIdInput = document.querySelector('#editFormItemId');
-    const cartItemId = document.querySelector('#cartItemId');
-    const orderCost = document.querySelector('#orderCost');
-    const deleteButton = document.querySelector('#deleteButton');
-    const decreaseButton = document.querySelector('#decreaseButton');
-    const increaseButton = document.querySelector('#increaseButton');
-    const itemQuantityInput = document.querySelector('#itemQuantity');
-    const cartForm = document.querySelector('#cartForm');
-    const sellingPriceDisplay = document.querySelector('#sellingPriceDisplay');
-    const cartItemsElements = document.querySelector('#cartItems');
-    const cartTotalPriceElement = document.querySelector('#cartTotalPrice');
-    const checkoutBtn = document.querySelector('#checkoutBtn');
- 
-//********************************************************************************
-////Display add Inventory form 
-//********************************************************************************
-    toggleButton.addEventListener('click', () => {
-        modalContainer.style.display = 'block';
-        overlay.style.display = 'block';
-    });
+    //DOM Elements variables
+    const showAddInventoryModal = document.getElementById("addInventoryFormButton");
+    const overlayElement = document.getElementById("overlay");
+    const modalContainerElement = document.getElementById("modalContainer");
+    const modalContainerCloseButton = document.getElementById("modal-close-button");
+    const addInventoryForm = document.getElementById("addInventoryForm");
+    const sku = document.getElementById("sku");
+    const addInventoryFormGrid = document.getElementById("addInventoryForm-grid");
+    const skuListContainer = document.getElementById("sku-list");
+    const documentInput = document.getElementById("documentNumber");
+    const inventoryTable = document.getElementById("inventoryTable");
+    const editModalContainer = document.querySelector("#editModalContainer");
+    const editFormCloseButton = document.querySelector("#editForm-closeButton");
+    const editInventoryForm = document.querySelector("#editInventoryForm");
+    const editFormDeleteButton = document.querySelector("#deleteButton");
+    const cartModalContainer = document.querySelector("#cartModalContainer");
+    const cartForm = document.querySelector("#cartForm");
+    const cartItemId = document.getElementById("cartItemId");
+    const cartFormQuantityInput = document.getElementById("quantity-input-element");
+    const cartFormCloseButton = document.querySelector("#cartForm-closeButton");
+    const cartItemsElements = document.querySelector("#cartItems");
+    const cartTotalPriceElement = document.querySelector("#cartTotalPrice");
+    const removeButtonPOS = document.getElementById("pos-remove-button");
+    const checkoutButtonPOS = document.getElementById("pos-checkout-button");
+
+    //Global Variables
+    //used inside the fetch data function
+    const showEditColumn = userType !== "basic-user";
+
+    //used inside sku event listener
+    let productName = "";
+    let sellingPrice = "";
+    let cartTotalPrice = "";
+    let cartFormSellingPrice = null;
+    let cartFormQuantityInStock = null;
+    let quantityButtonsListener = false;
+    let quantityInputListener = false;
 
 //********************************************************************************
-////Utility functions  
+////Functions Declarations
 //********************************************************************************
+    // DOM Manipulation Function
     function closeModal(modal, overlay) {
-        
-        if(modal.id === 'cartModalContainer') {
-            console.log('reach here');
-            itemQuantityInput.value = 1; 
-        }
-
-        modal.style.display = 'none';
-        overlay.style.display = 'none';
+        modal.style.display = "none";
+        overlay.style.display = "none";
     }
 
-    function updateTableWithData(data) {
-        $('#myTable').DataTable().clear().rows.add(data).draw();
+    // DOM Manipulation Function
+    function resetInputFields() {
+        const inputFields = [
+            product_name,
+            received_quantity,
+            cost_price,
+            selling_price,
+            supplier,
+            reorderPoint,
+            sku,
+            documentNumber,
+        ];
+
+        inputFields.forEach((field) => (field.value = ""));
+        inputFields.forEach((field) => (field.disabled = false));
+
+        addInventoryFormGrid.style.display = "grid";
+        skuListContainer.style.display = "none";
     }
 
-    function getFormDataFromForm(form) {
-
-        if(form === addInventoryForm){
+    //Form Handling Function
+    function extractFormData(form) {
+        if (form === addInventoryForm) {
             const formData = {
-                product_name: form.querySelector('#product_name').value,
-                received_quantity: form.querySelector('#received_quantity').value,
-                cost_price: form.querySelector('#cost_price').value,
-                selling_price: form.querySelector('#selling_price').value,
-                supplier: form.querySelector('#supplier').value,
-                sku: form.querySelector('#sku').value,
-                description: form.querySelector('#description').value
+                product_name: form.querySelector("#product_name").value,
+                received_quantity:
+                    form.querySelector("#received_quantity").value,
+                cost_price: form.querySelector("#cost_price").value,
+                selling_price: form.querySelector("#selling_price").value,
+                supplier: form.querySelector("#supplier").value,
+                sku: form.querySelector("#sku").value,
+                reorderPoint: form.querySelector("#reorderPoint").value,
+                documentNumber: form.querySelector("#documentNumber").value,
             };
-    
+            return formData;
+        } else if (form === editInventoryForm) {
+            const formData = {
+                sku: editSKU.value,
+                productName: editProductName.value,
+                receivedQuantity: editReceivedQuantity.value,
+                quantityInStock: editQuantityInStock.value,
+                costPrice: editCostPrice.value,
+                sellingPrice: editSellingPrice.value,
+                supplier: editSupplier.value,
+                reorderPoint: editReorderPoint.value,
+                documentNumber: editDocumentNumber.value,
+                itemId: editFormItemId.value,
+            };
             return formData;
         }
-    
-        else if(form === editInventoryForm){
-            const formData = {
-                productName: editProductNameInput.value,
-                receivedQuantity: editReceivedQuantityInput.value,
-                quantityInStock : editQuantityInStockInput.value,
-                costPrice: editCostPriceInput.value,
-                sellingPrice: editSellingPriceInput.value,
-                supplier: editSupplierInput.value,
-                sku: editSKUInput.value,
-                description: editDescriptionInput.value,
-                itemId: editFormItemIdInput.value
-            };
-    
-            return formData;
-        }
     }
-    
+
+    //Data Management Function
     async function fetchInventoryData() {
         try {
-            const response = await fetch('/getInventoryData');
+            const response = await fetch("/getInventoryData");
 
             if (!response.ok) {
-                throw new Error('Failed to fetch inventory data');
+                throw new Error("Failed to fetch inventory data");
             }
 
             const data = await response.json();
 
-            data.forEach(item => {
-                item['Edit'] = '<button id="editButton" class="tableButton">Edit</button>';
-                item['Add to Cart'] = '<button id="cartButton" class="tableButton">Add to Cart</button>';
+            data.forEach((item) => {
+                item["Edit"] =
+                    '<button id="editButton" class="tableButton">Edit</button>';
+                item["Add to Cart"] =
+                    '<button id="cartButton" class="tableButton">Add to Cart</button>';
             });
 
             return data;
-        } 
-        catch (error) {
-            console.error('Error fetching inventory data:', error);
+        } catch (error) {
+            console.error("Error fetching inventory data:", error);
             return [];
         }
-    }; 
+    }
 
+    //Data Management Function
+    async function fetchData() {
+        try {
+            const data = await fetchInventoryData();
+
+            // Define the columns array
+            const columns = [
+                { data: "sku" },
+                { data: "product_name" },
+                { data: "documentNumber" },
+                { data: "quantity_received" },
+                { data: "quantity_inStock" },
+                {
+                    data: "cost_price",
+                    render: function (data, type, row) {
+                        if (type === "display" || type === "filter") {
+                            return formatAsPhCurrency(data);
+                        }
+                        return data; // For all other types, return the original data
+                    },
+                },
+                {
+                    data: "selling_price",
+                    render: function (data, type, row) {
+                        if (type === "display" || type === "filter") {
+                            return formatAsPhCurrency(data);
+                        }
+                        return data; // For all other types, return the original data
+                    },
+                },
+                { data: "supplier" },
+                { data: "updated_at" },
+                { data: "Add to Cart" },
+            ];
+
+            // Conditionally add the "Edit" column to the columns array
+            if (showEditColumn) {
+                columns.splice(9, 0, { data: "Edit" });
+            }
+
+            const dataTable = new DataTable(inventoryTable, {
+                data: data,
+                columns: columns,
+            });
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
+    //Data Management Function
+    function updateTableWithData(data) {
+        const dataTable = new DataTable(inventoryTable);
+
+        dataTable.clear().rows.add(data).draw();
+    }
+
+    //Data Management Function
+    async function initTable() {
+        try {
+            const data = await fetchInventoryData();
+            updateTableWithData(data);
+        } catch (error) {
+            console.error("Error initializing table:", error);
+        }
+    }
+
+    //Data Management Function
+    async function fetchInventoryItem(param) {
+        let endpoint = "";
+
+        if (param.paramType === "sku") {
+            endpoint = `/getInventoryBySKU/${param.skuItem}`;
+        } else if (param.paramType === "itemId") {
+            endpoint = `/getInventoryByItemId/${param.itemId}`;
+        } else {
+            return null; // Invalid paramType
+        }
+
+        try {
+            const response = await fetch(endpoint);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch inventory item");
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching inventory item:", error);
+            return null;
+        }
+    }
+
+    //Data Management Function
+    async function populateCartItems() {
+        try {
+            const response = await fetch("/getCartItems");
+            const cartItems = await response.json();
+
+            cartItemsElements.innerHTML = "";
+
+            cartItems.forEach((item) => {
+                const label = document.createElement("label");
+
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("cartItemCard");
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.id = `cartItem_${item.itemId}`;
+                checkbox.name = "cartItem";
+                checkbox.value = item.itemId;
+
+                const quantity = document.createElement("span");
+                quantity.innerText = `${item.quantity}x`;
+
+                const productName = document.createElement("p");
+                productName.innerHTML = `${quantity.outerHTML} ${item.productName}`;
+
+                const totalPrice = document.createElement("p");
+                totalPrice.classList.add("total-price");
+                totalPrice.innerHTML = `<strong>Total Price:</strong> ${formatAsPhCurrency(
+                    item.totalPrice
+                )}`;
+
+                itemDiv.appendChild(checkbox);
+                itemDiv.appendChild(productName);
+                itemDiv.appendChild(totalPrice);
+
+                label.htmlFor = `cartItem_${item.itemId}`;
+                label.appendChild(itemDiv);
+
+                cartItemsElements.appendChild(label);
+            });
+
+            if (
+                cartItemsElements.querySelectorAll(
+                    'input[name="cartItem"]:checked'
+                ).length === 0
+            ) {
+                cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsPhCurrency(
+                    0
+                )}</p>`;
+            }
+        } catch (error) {
+            console.error("Error fetching cart items:", error);
+        }
+    }
+
+//********************************************************************************
+////Inventory Table Utility Functions
+//********************************************************************************
+    //Data Management Function -- for edit button
+    async function handleEditButtonClick(editButton) {
+        const table = new DataTable(inventoryTable);
+        const rowData = table.row(editButton.closest("tr")).data();
+        const itemId = rowData._id;
+
+        editModalContainer.style.display = "block";
+        overlay.style.display = "block";
+
+        const itemObject = {
+            itemId: itemId,
+            paramType: "itemId",
+        };
+
+        const inventoryItem = await fetchInventoryItem(itemObject);
+
+        if (inventoryItem) {
+            editSKU.value = inventoryItem.sku;
+            editProductName.value = inventoryItem.product_name;
+            editReceivedQuantity.value = inventoryItem.quantity_received;
+            editQuantityInStock.value = inventoryItem.quantity_inStock;
+            editCostPrice.value = inventoryItem.cost_price;
+            editSellingPrice.value = inventoryItem.selling_price;
+            editSupplier.value = inventoryItem.supplier;
+            editReorderPoint.value = inventoryItem.reorderPoint;
+            editDocumentNumber.value = inventoryItem.documentNumber;
+            editFormItemId.value = inventoryItem._id;
+        }
+    }
+
+    //Data Management Function
     function calculateTotalValue(currentQuantity, sellingPrice) {
         return currentQuantity * sellingPrice;
     }
 
-    async function populateCartItems() {
-        try {
-            const response = await fetch('/getCartItems');
-            const cartItems = await response.json();
+    //Data Management Function
+    function formatAsPhCurrency(amount) {
+        const formatter = new Intl.NumberFormat("en-PH", {
+            style: "currency",
+            currency: "PHP",
+        });
+        return formatter.format(amount);
+    }
 
-            cartItemsElements.innerHTML = '';
+    // DOM Manipulation Function
+    function updateTotalValue(itemQuantity, sellingPrice) {
+        totalPrice = calculateTotalValue(itemQuantity,sellingPrice);
+        const formattedPrice = formatAsPhCurrency(totalPrice);
+        sellingPriceDisplay.textContent = `Total Value: ${formattedPrice}`;
+        cartTotalPrice = totalPrice;
+    }
 
-            cartItems.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.classList.add('cartItemCard');
-                itemDiv.innerHTML = `
-                    <input type="checkbox" name="cartItem" value="${item.itemId}">
-                    <p><span>${item.quantity}x</span> ${item.productName}</p>
-                    <p class="total-price"><strong>Total Price:</strong> ${formatAsMoney(item.totalPrice)}</p>
-                `;
+    // DOM Manipulation Function
+    function quantityButtons(event) {
+        const target = event.target.id;
+        if (target === "increaseButton") {
+            if (parseInt(itemQuantity.value) < cartFormQuantityInStock) {
+                itemQuantity.value++;
+                updateTotalValue(itemQuantity.value, cartFormSellingPrice);
+            }
+        } 
+        else if (target === "decreaseButton") {
+            if (parseInt(itemQuantity.value) > 1) {
+                itemQuantity.value--;
+                updateTotalValue(itemQuantity.value, cartFormSellingPrice);
+            }
+        }
+    }
 
-                cartItemsElements.appendChild(itemDiv);
-            });
+    // DOM Manipulation Function
+    function quantityInput(event) {
+        const target = event.target.id;
+        if(target === "itemQuantity") {
+            const inputQuantity = parseInt(itemQuantity.value) || itemQuantity.value;
 
+            if(inputQuantity > cartFormQuantityInStock) {
+                itemQuantity.value = cartFormQuantityInStock; 
+            }
+            else {
+                itemQuantity.value = inputQuantity;
+            }
+        };
+    }
+
+    //Data Management Function -- for cart button
+    async function handleCartButtonClick(cartButton) {
+
+        const table = new DataTable(inventoryTable);
+        const rowData = table.row(cartButton.closest("tr")).data();
+        cartItemId.value = rowData._id;
+        cartFormQuantityInStock = rowData.quantity_inStock;
+        cartFormSellingPrice = rowData.selling_price;
+        cartModalContainer.style.display = "block";
+        overlay.style.display = "block";
+
+        if(rowData) {
+            productNameDisplay.textContent = `Product Name: ${rowData.product_name}`;
+            sellingPriceDisplay.textContent = `Total Value: ${formatAsPhCurrency(rowData.selling_price)}`;
             
-        if (cartItemsElements.querySelectorAll('input[name="cartItem"]:checked').length === 0) {
-            cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsMoney(0)}</p>`;
-        }
+            if(quantityButtonsListener === false) {
+                cartFormQuantityInput.addEventListener("click", quantityButtons);
+                quantityButtonsListener = true;
+            }
 
-        } 
-        catch (error) {
-            console.error('Error fetching cart items:', error);
+            if(quantityInputListener === false) {
+                cartFormQuantityInput.addEventListener("input", quantityInput); 
+                quantityInputListener = true;
+            }
         }
     }
-
-    function formatAsMoney(amount, decimalPlaces = 2) {
-        return `&#8369;${amount.toLocaleString(undefined, { minimumFractionDigits: decimalPlaces, maximumFractionDigits: decimalPlaces })}`;
-    }
-    
 //********************************************************************************
-////Event listener for close buttons 
+////Display add Inventory form
 //********************************************************************************
-    addFormCloseButton.addEventListener('click', () => closeModal(modalContainer, overlay));
-    editFormCloseButton.addEventListener('click', () => closeModal(editModalContainer, overlay));
-    cartFormCloseButton.addEventListener('click', () => closeModal(cartModalContainer, overlay));
+    showAddInventoryModal.addEventListener("click", () => {
+        modalContainerElement.style.display = "block";
+        overlayElement.style.display = "block";
+    });
 
 //********************************************************************************
-////Add Inventory Form submission
+////Add Inventory Form Event Listener
 //********************************************************************************
-    addInventoryForm.addEventListener('submit', async (event) => {
+    addInventoryForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const formData = getFormDataFromForm(addInventoryForm); 
-    
+        const formData = extractFormData(addInventoryForm);
+
         try {
-            const response = await fetch('/addInventory', {
-                method: 'POST',
+            const response = await fetch("/addInventory", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
 
-            const data = await response.json();
-
-            fetchInventoryData().then((data) => {
-                updateTableWithData(data);
-            });
-
-        } 
-        catch (error) {
-            console.error('Error:', error);
+            initTable();
+            resetInputFields();
+        } catch (error) {
+            console.error("Error:", error);
         }
 
         addInventoryForm.reset();
     });
-
 //********************************************************************************
-////Set data for tables
-//********************************************************************************    
-    const showEditColumn = userType !== 'basic-user';
-
-    fetchInventoryData().then((data) => {
-        console.log("Fetched data:", data);
-
-        // Define the columns array based on the showEditColumn flag
-        const columns = [
-            { data: 'sku' },
-            { data: 'product_name' },
-            { data: 'quantity_received' },
-            { data: 'quantity_inStock' },
-            { data: 'cost_price' },
-            { data: 'selling_price' },
-            { data: 'supplier' },
-            { data: 'updated_at' },
-            { data: 'Add to Cart' },
-        ];
-
-        // Conditionally add the "Edit" column to the columns array
-        if (showEditColumn) {
-            columns.splice(8, 0, { data: 'Edit' });
+////SKU Look-up Event Listener
+//********************************************************************************
+    sku.addEventListener("keydown", async (event) => {
+        if (event.key === "Enter") {
+            handleSkuValidation();
         }
+    });
 
-        $('#myTable').DataTable({
-            data: data,
-            columns: columns,
-        });
-    }).catch((error) => {
-        console.error("Error fetching data:", error);
+    sku.addEventListener("blur", async (event) => {
+        // Check if the blur event was caused by a mouse click or Tab key press
+        const activeElement = document.activeElement;
+        if (activeElement !== sku || event.relatedTarget !== null) {
+            handleSkuValidation();
+        }
+    });
+
+    async function handleSkuValidation() {
+        // Handle SKU validation here
+        const itemObject = {
+            skuItem: sku.value,
+            paramType: "sku",
+        };
+
+        const response = await fetchInventoryItem(itemObject);
+
+        if (response.length > 1) {
+            sku.disabled = true;
+            addInventoryFormGrid.style.display = "none";
+            skuListContainer.style.display = "block";
+            productName = response[0].product_name;
+            sellingPrice = response[0].selling_price;
+
+            while (skuListContainer.firstChild) {
+                skuListContainer.removeChild(skuListContainer.firstChild);
+            }
+
+            response.forEach((item) => {
+                const card = document.createElement("div");
+                card.classList.add("sku-card");
+
+                const documentNumberElement = document.createElement("p");
+                const documentNumberStrong = document.createElement("strong");
+                documentNumberStrong.textContent = "Document Number:";
+                const documentNumberSpan = document.createElement("span");
+                documentNumberSpan.textContent = item.documentNumber;
+                documentNumberElement.appendChild(documentNumberStrong);
+                documentNumberElement.appendChild(documentNumberSpan);
+
+                const itemQuantity = document.createElement("p");
+                const itemQuantityStrong = document.createElement("strong");
+                itemQuantityStrong.textContent = "Quantity in stock:";
+                const itemQuantitySpan = document.createElement("span");
+                itemQuantitySpan.textContent = item.quantity_inStock;
+                itemQuantity.appendChild(itemQuantityStrong);
+                itemQuantity.appendChild(itemQuantitySpan);
+
+                card.appendChild(documentNumberElement);
+                card.appendChild(itemQuantity);
+
+                skuListContainer.appendChild(card);
+
+                // Disable the input fields
+                sku.disabled = true;
+                product_name.disabled = true;
+                received_quantity.disabled = true;
+                selling_price.disabled = true;
+                cost_price.disabled = true;
+                supplier.disabled = true;
+                reorderPoint.disabled = true;
+            });
+        } else if (response.length === 1) {
+            productName = response[0].product_name;
+            sellingPrice = response[0].selling_price;
+
+            product_name.value = response[0].product_name;
+            received_quantity.value = response[0].quantity_received;
+            cost_price.value = response[0].cost_price;
+            selling_price.value = response[0].selling_price;
+            supplier.value = response[0].supplier;
+            reorderPoint.value = response[0].reorderPoint;
+
+            // Disable the input fields
+            sku.disabled = true;
+            product_name.disabled = true;
+            received_quantity.disabled = true;
+            selling_price.disabled = true;
+            cost_price.disabled = true;
+            supplier.disabled = true;
+            reorderPoint.disabled = true;
+        } else if (response.error) {
+            console.log("No items returned");
+        }
+    }
+//********************************************************************************
+////Document Number Look-up Event Listener
+//********************************************************************************
+    documentInput.addEventListener("keydown", async (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            const docInput = document.getElementById("documentNumber").value;
+
+            try {
+                const response = await fetch(`getInventoryByDoc/${docInput}`);
+
+                if (!response.ok) {
+                    throw new Error(
+                        "Failed to fetch inventory by document Number"
+                    );
+                }
+
+                const data = await response.json();
+
+                console.log(data);
+
+                if (data.length > 0) {
+                    alert("Document number already exist");
+                } else {
+                    addInventoryFormGrid.style.display = "grid";
+                    skuListContainer.style.display = "none";
+
+                    product_name.value = productName
+                        ? productName
+                        : product_name.value;
+                    received_quantity.disabled = false;
+                    selling_price.value = sellingPrice
+                        ? sellingPrice
+                        : selling_price.value;
+                    cost_price.disabled = false;
+                    supplier.disabled = false;
+                    reorderPoint.disabled = false;
+                }
+            } catch (error) {
+                // Handle the error here
+                console.error("An error occurred:", error);
+            }
+        }
     });
 
 //********************************************************************************
-////Attached event listener for edit and add to cart buttons inside the table
-//******************************************************************************** 
-    document.querySelector('#myTable').addEventListener('click', async (event) => {
+////Close Modal - event listener for closing the add inventory form
+//********************************************************************************
+    modalContainerCloseButton.addEventListener("click", () => {
+        closeModal(modalContainer, overlay);
+        resetInputFields();
+    });
+
+    editFormCloseButton.addEventListener("click", () =>
+        closeModal(editModalContainer, overlay)
+    );
+    cartFormCloseButton.addEventListener("click", () => {
+        closeModal(cartModalContainer, overlay);
+        itemQuantity.value = 1;
+    });
+
+//********************************************************************************
+////Table Buttons event lister
+//********************************************************************************
+    inventoryTable.addEventListener("click", async (event) => {
         const targetId = event.target.id;
-        if (targetId === 'editButton') {
+        if (targetId === "editButton") {
             await handleEditButtonClick(event.target);
-        };
+        }
 
-        if (targetId === 'cartButton') {
+        if (targetId === "cartButton") {
             await handleCartButtonClick(event.target);
-        };
+        }
     });
-
-    async function fetchData(itemId) {
-        try {
-            const response = await fetch(`/getInventoryItem/${itemId}`);
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch inventory item');
-            };
-
-            return await response.json();
-        } catch (error) {
-            console.error('Error fetching inventory item:', error);
-            return null;
-        };
-    };
-
-    async function handleEditButtonClick(editButton) {
-        const table = $('#myTable').DataTable();
-        const rowData = table.row(editButton.closest('tr')).data();
-        const itemId = rowData._id;
-
-        editModalContainer.style.display = 'block';
-        overlay.style.display = 'block';
-        
-        const inventoryItem = await fetchData(itemId);
-
-        if (inventoryItem) {
-            
-            editProductNameInput.value = inventoryItem.product_name;
-            editReceivedQuantityInput.value = inventoryItem.quantity_received;
-            editQuantityInStockInput.value = inventoryItem.quantity_inStock;
-            editCostPriceInput.value = inventoryItem.cost_price;
-            editSellingPriceInput.value = inventoryItem.selling_price;
-            editSupplierInput.value = inventoryItem.supplier;
-            editSKUInput.value = inventoryItem.sku;
-            editDescriptionInput.value = inventoryItem.description;
-            editFormItemIdInput.value = itemId;
-        };
-    };
-
-    async function handleCartButtonClick(cartButton) {
-        const itemId = rowData._id;
-        const table = $('#myTable').DataTable();
-        const inventoryItem = await fetchData(itemId);
-        const rowData = table.row(cartButton.closest('tr')).data();
-
-        orderCost.value = rowData.selling_price;
-    
-        if (inventoryItem) {
-            console.log(inventoryItem);
-            const productNameElement = document.querySelector('#productName');
-            cartItemId.value = itemId;
-            let itemQuantity = itemQuantityInput.value;
-    
-            productNameElement.textContent = `Product Name: ${inventoryItem.product_name}`;
-            sellingPriceDisplay.textContent = `Total Value: Php ${inventoryItem.selling_price}`;
-    
-            itemQuantityInput.addEventListener('input', handleItemQuantityInput);
-            decreaseButton.addEventListener('click', handleDecreaseButtonClick);
-            increaseButton.addEventListener('click', handleIncreaseButtonClick);
-    
-            cartModalContainer.style.display = 'block';
-            overlay.style.display = 'block';
-        }
-    
-        function handleItemQuantityInput() {
-            const enteredQuantity = parseInt(itemQuantityInput.value);
-    
-            if (enteredQuantity > inventoryItem.quantity_inStock) {
-                itemQuantityInput.value = inventoryItem.quantity_inStock;
-            } else if (enteredQuantity < 1) {
-                itemQuantityInput.value = 1;
-            } else {
-                itemQuantity = enteredQuantity;
-            }
-    
-            updateTotalValue();
-        }
-    
-        function handleDecreaseButtonClick() {
-            if (itemQuantity > 1) {
-                itemQuantity--;
-                itemQuantityInput.value = itemQuantity;
-                updateTotalValue();
-            }
-        }
-    
-        function handleIncreaseButtonClick() {
-            if (itemQuantity < inventoryItem.quantity_inStock) {
-                itemQuantity++;
-                itemQuantityInput.value = itemQuantity;
-                updateTotalValue();
-            }
-        }
-    
-        function updateTotalValue() {
-            totalPrice = calculateTotalValue(itemQuantity, inventoryItem.selling_price);
-            sellingPriceDisplay.textContent = `Total Value: Php ${totalPrice}`;
-            orderCost.value = totalPrice;
-        }
-    };
-
 
 //********************************************************************************
 ////Edit inventory form submission
 //********************************************************************************
-    editInventoryForm.addEventListener('submit', async (event) => {
+    editInventoryForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const formData = getFormDataFromForm(editInventoryForm); 
-        
+        const formData = extractFormData(editInventoryForm);
+
         try {
-            const response = await fetch('/editInventoryItem', {
-                method: 'POST',
+            const response = await fetch("/editInventoryItem", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
-
-
+            console.log(data);
             closeModal(editModalContainer, overlay);
 
             fetchInventoryData().then((data) => {
                 updateTableWithData(data);
             });
-
-        } 
-        catch (error) {
-            console.error('Error:', error);
+        } catch (error) {
+            console.error("Error:", error);
         }
     });
 
 //********************************************************************************
-////Delete inventory button event listener
+////Edit Form Delete Event
 //********************************************************************************
-    deleteButton.addEventListener('click', async (event) => {
+    editFormDeleteButton.addEventListener("click", async (event) => {
         //fetch the item id here
-        const itemId = editFormItemIdInput.value;
+        const itemId = editFormItemId.value;
 
         try {
             const response = await fetch(`/deleteInventoryItem/${itemId}`, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
             });
 
             if (!response.ok) {
-                throw new Error('Failed to delete inventory item');
+                throw new Error("Failed to delete inventory item");
             }
             populateCartItems();
             closeModal(editModalContainer, overlay);
@@ -396,133 +640,181 @@ document.addEventListener('DOMContentLoaded', async () => {
             fetchInventoryData().then((data) => {
                 updateTableWithData(data);
             });
-
         } catch (error) {
-            console.error('Error deleting inventory item:', error);
+            console.error("Error deleting inventory item:", error);
         }
+    });
 
-    })
 //********************************************************************************
-////cartForm event listener for submitting items to cart collection
+////Cart Form submission
 //********************************************************************************
-    cartForm.addEventListener('submit', async (event) => {
-        event.preventDefault(); 
+    cartForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
         const formData = {
-            itemId : cartItemId.value,
-            itemQuantity: itemQuantityInput.value,
-            totalPrice: orderCost.value
-        }
+            itemId: cartItemId.value,
+            itemQuantity: itemQuantity.value,
+            totalPrice: cartTotalPrice,
+        };
 
         try {
-            const response = await fetch('/addToCart', {
-                method: 'POST',
+            const response = await fetch("/addToCart", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(formData),
             });
 
             const data = await response.json();
-            
-            console.log(data);
+
             populateCartItems();
             closeModal(cartModalContainer, overlay);
-        } 
-        catch (error) {
-            console.error('Error:', error);
+        } catch (error) {
+            console.error("Error:", error);
         }
     });
-//********************************************************************************
-////populate items added to cart
-//********************************************************************************
-    populateCartItems();
-//********************************************************************************
-////Remove from cart event listener
-//********************************************************************************
 
-    removeBtn.addEventListener('click', async () => {
-        const selectedItems = Array.from(cartItemsElements.querySelectorAll('input[name="cartItem"]:checked'))
-            .map(checkbox => checkbox.value);
+//********************************************************************************
+////Cart POS Event listener
+//********************************************************************************
+    cartItemsElements.addEventListener("change", function (event) {
+        if (
+            event.target.type === "checkbox" &&
+            event.target.name === "cartItem"
+        ) {
+            const checkedCheckboxes = cartItemsElements.querySelectorAll(
+                'input[name="cartItem"]:checked'
+            );
+            let totalPrice = 0;
+
+            checkedCheckboxes.forEach((checkbox) => {
+                const itemDiv = checkbox.closest(".cartItemCard");
+                const totalPriceElement = itemDiv.querySelector(".total-price");
+                const totalPriceText = totalPriceElement.textContent;
+
+                // Extract the numeric value by removing "Total Price:" and trimming spaces
+                const numericValue = parseFloat(
+                    totalPriceText.replace(/[^0-9.-]+/g, "")
+                );
+
+                if (!isNaN(numericValue)) {
+                    totalPrice += numericValue;
+                }
+            });
+
+            cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsPhCurrency(
+                totalPrice
+            )}</p>`;
+        }
+    });
+
+//********************************************************************************
+////Remove items from Cart/POS
+//********************************************************************************
+    removeButtonPOS.addEventListener("click", async () => {
+        // Find all the checked checkboxes with the name "cartItem"
+        const checkboxElements = cartItemsElements.querySelectorAll(
+            'input[name="cartItem"]:checked'
+        );
+
+        // Extract the values of the selected items
+        const selectedItems = Array.from(checkboxElements).map(
+            (checkbox) => checkbox.value
+        );
 
         if (selectedItems.length === 0) {
-            alert('Please select items to remove from the cart.');
+            alert("Please select items to remove from the cart.");
             return;
         }
-    
+
         try {
-            const response = await fetch('/removeFromCart', {
-                method: 'POST',
+            const response = await fetch("/removeFromCart", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ items: selectedItems })
+                body: JSON.stringify({ items: selectedItems }),
             });
-    
+
             if (response.ok) {
                 // Refresh the cart items after successful removal
                 populateCartItems();
             } else {
-                console.error('Failed to remove cart items:', response.statusText);
+                console.error(
+                    "Failed to remove cart items:",
+                    response.statusText
+                );
             }
         } catch (error) {
-            console.error('Error removing cart items:', error);
+            console.error("Error removing cart items:", error);
         }
     });
 
 //********************************************************************************
-////Checkout from cart event listener
+////Check-out items from cart/POS
 //********************************************************************************
-
-    checkoutBtn.addEventListener('click', async (event) => {
+    checkoutButtonPOS.addEventListener("click", async (event) => {
         try {
-            const selectedItems = Array.from(cartItemsElements.querySelectorAll('input[name="cartItem"]:checked'))
-                .map(checkbox => checkbox.value);
+            // Find all the checked checkboxes with the name "cartItem"
+            const checkboxElements = cartItemsElements.querySelectorAll(
+                'input[name="cartItem"]:checked'
+            );
+
+            // Extract the values of the selected items
+            const selectedItems = Array.from(checkboxElements).map(
+                (checkbox) => checkbox.value
+            );
 
             if (selectedItems.length === 0) {
-                alert('Please select items to checkout.');
+                alert("Please select items to checkout.");
                 return;
             }
+
             // Fetch selected cart items from the server
-            const response = await fetch('/getCartItems');
+            const response = await fetch("/getCartItems");
             const cartItems = await response.json();
 
-            console.log(cartItems);
-
             // Filter selected cart items based on selectedItems array
-            const selectedCartItems = cartItems.filter(item => selectedItems.includes(item.itemId));
+            const selectedCartItems = cartItems.filter((item) =>
+                selectedItems.includes(item.itemId)
+            );
 
             // Calculate total price for the selected items
-            const totalPrice = selectedCartItems.reduce((total, item) => total + item.totalPrice, 0);
+            const totalPrice = selectedCartItems.reduce(
+                (total, item) => total + item.totalPrice,
+                0
+            );
 
             // Create a new sales document
             const salesData = {
-                items: selectedCartItems.map(item => ({
+                items: selectedCartItems.map((item) => ({
                     inventoryId: item.inventoryId,
                     productName: item.productName,
-                    quantity: item.quantity
+                    quantity: item.quantity,
                 })),
                 totalPrice: totalPrice,
                 created_at: new Date(),
-                updated_at: new Date()
+                updated_at: new Date(),
             };
 
             // Send the sales data to the server for saving
-            const salesResponse = await fetch('/checkout', {
-                method: 'POST',
+            const salesResponse = await fetch("/checkout", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(salesData)
+                body: JSON.stringify(salesData),
             });
 
             if (salesResponse.ok) {
                 // Proceed to remove selected items from the cart
-                const removeResponse = await fetch('/removeFromCart', {
-                    method: 'POST',
+                const removeResponse = await fetch("/removeFromCart", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ items: selectedItems })
+                    body: JSON.stringify({ items: selectedItems }),
                 });
 
                 if (removeResponse.ok) {
@@ -533,41 +825,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                         updateTableWithData(data);
                     });
                 } else {
-                    console.error('Failed to remove cart items:', removeResponse.statusText);
+                    console.error(
+                        "Failed to remove cart items:",
+                        removeResponse.statusText
+                    );
                 }
             } else {
-                console.error('Failed to save sales data:', salesResponse.statusText);
+                console.error(
+                    "Failed to save sales data:",
+                    salesResponse.statusText
+                );
             }
         } catch (error) {
-            console.error('Error during checkout:', error);
+            console.error("Error during checkout:", error);
         }
     });
 
-    
 //********************************************************************************
-////checkboxes event listener to display total price
+////Auto dispatch events - events that should happen when page loads
 //********************************************************************************
-    cartItemsElements.addEventListener('change', function(event) {
-        if (event.target.type === 'checkbox' && event.target.name === 'cartItem') {
-            const checkedCheckboxes = cartItemsElements.querySelectorAll('input[name="cartItem"]:checked');
-            let totalPrice = 0;
+    fetchData();
+    populateCartItems();
 
-            checkedCheckboxes.forEach(checkbox => {
-                const itemDiv = checkbox.closest('.cartItemCard');
-                const totalPriceElement = itemDiv.querySelector('.total-price');
-                const totalPriceText = totalPriceElement.textContent;
-
-                // Extract the numeric value by removing "Total Price:" and trimming spaces
-                const numericValue = parseFloat(totalPriceText.replace(/[^0-9.-]+/g,""));
-
-                if (!isNaN(numericValue)) {
-                    totalPrice += numericValue;
-                }
-            });
-
-            cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsMoney(totalPrice)}</p>`;
-        }
-    });
-
+//********************************************************************************
+////End
+//********************************************************************************
 });
-

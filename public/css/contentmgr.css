@@ -62,14 +62,14 @@ textarea {
   padding: 10px;
   border: none;
   border-radius: 4px;
-  background-color: #4caf50;
+  background-color: #007bff;
   color: white;
   font-weight: bold;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: green;
+  background-color: #0056b3;
 }
 
 /* Modal container */
@@ -151,14 +151,14 @@ button:hover {
   padding: 10px;
   border: none;
   border-radius: 4px;
-  background-color: #4caf50;
+  background-color: #007bff;
   color: white;
   font-weight: bold;
   cursor: pointer;
 }
 
 .table-card .btn-container button:hover {
-  background-color: green;
+  background-color: #0056b3;
 }
 
 .table-card .row-card {

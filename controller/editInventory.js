@@ -3,16 +3,17 @@ import Inventory from "../models/inventory.js";
 const editInventoryItem = async (req, res) => {
 
     const {
+        sku,
         productName,
         receivedQuantity,
         quantityInStock,
         costPrice,
         sellingPrice,
         supplier,
-        sku,
-        description,
+        reorderPoint,
+        documentNumber,
         itemId
-    } = req.body;
+    } = req.body; 
 
     try {
 
@@ -36,10 +37,12 @@ const editInventoryItem = async (req, res) => {
         existingItem.selling_price = sellingPrice;
         existingItem.supplier = capitalizeFirstLetter(supplier);
         existingItem.sku = capitalizedSKU;
-        existingItem.description = capitalizeFirstLetter(description);
-
+        existingItem.reorderPoint = reorderPoint;
+        existingItem.documentNumber = documentNumber;
+        
         // Save the updated inventory item back to the database
         await existingItem.save();
+
         return res.json({ success: true, message: 'Inventory item updated successfully' });
     } 
     catch (error) {
