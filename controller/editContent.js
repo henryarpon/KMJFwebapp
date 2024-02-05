@@ -23,7 +23,6 @@ const editContent = async (req, res) => {
         return res.json({ success: true, message: 'Content updated successfully' });
     } 
     catch (error) {
-        console.log('Error', error);
         res.json({ success: false, message: 'Content not found' });
         return res.json({ success: false, message: 'An error occured while updating the content' });
     }

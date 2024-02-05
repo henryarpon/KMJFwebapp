@@ -6,10 +6,8 @@ const deleteUser = async (req, res) => {
     const deletedUser = await User.deleteOne({ username: selectUserDelete });
 
     if (deletedUser.deletedCount === 1) {
-      console.log('User deleted successfully');
       res.json({ success: true, message: 'User deleted successfully' });
     } else {
-      console.log('User not found');
       res.json({ success: false, message: 'User not found' });
     }
   } catch (error) {

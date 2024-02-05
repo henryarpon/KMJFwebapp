@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const sku = document.getElementById("sku");
     const addInventoryFormGrid = document.getElementById("addInventoryForm-grid");
     const skuListContainer = document.getElementById("sku-list");
-    const documentInput = document.getElementById("documentNumber");
+    const documentInput = document.getElementById("document_number");
     const inventoryTable = document.getElementById("inventoryTable");
     const editModalContainer = document.querySelector("#editModalContainer");
     const editFormCloseButton = document.querySelector("#editForm-closeButton");
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     //used inside sku event listener
     let productName = "";
     let sellingPrice = "";
-    let cartTotalPrice = "";
+    let itemPrice = 0;
     let cartFormSellingPrice = null;
     let cartFormQuantityInStock = null;
     let quantityButtonsListener = false;
@@ -57,9 +57,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             cost_price,
             selling_price,
             supplier,
-            reorderPoint,
+            reorder_point,
             sku,
-            documentNumber,
+            document_number,
+            supplier_email,
+            reorder_quantity
         ];
 
         inputFields.forEach((field) => (field.value = ""));
@@ -73,60 +75,69 @@ document.addEventListener("DOMContentLoaded", async () => {
     function extractFormData(form) {
         if (form === addInventoryForm) {
             const formData = {
+                sku: form.querySelector("#sku").value,
                 product_name: form.querySelector("#product_name").value,
-                received_quantity:
-                    form.querySelector("#received_quantity").value,
+                received_quantity: form.querySelector("#received_quantity").value,
                 cost_price: form.querySelector("#cost_price").value,
                 selling_price: form.querySelector("#selling_price").value,
                 supplier: form.querySelector("#supplier").value,
-                sku: form.querySelector("#sku").value,
-                reorderPoint: form.querySelector("#reorderPoint").value,
-                documentNumber: form.querySelector("#documentNumber").value,
+                supplier_email: form.querySelector("#supplier_email").value,
+                reorder_point: form.querySelector("#reorder_point").value,
+                reorder_quantity: form.querySelector("#reorder_quantity").value,
+                document_number: form.querySelector("#document_number").value,
             };
+
             return formData;
-        } else if (form === editInventoryForm) {
+        } 
+        else if (form === editInventoryForm) {
+
             const formData = {
                 sku: editSKU.value,
-                productName: editProductName.value,
-                receivedQuantity: editReceivedQuantity.value,
-                quantityInStock: editQuantityInStock.value,
-                costPrice: editCostPrice.value,
-                sellingPrice: editSellingPrice.value,
+                product_name: editProductName.value,
+                received_quantity: editReceivedQuantity.value,
+                quantity_inStock: editQuantityInStock.value,
+                cost_price: editCostPrice.value,
+                selling_price: editSellingPrice.value,
                 supplier: editSupplier.value,
-                reorderPoint: editReorderPoint.value,
-                documentNumber: editDocumentNumber.value,
+                supplier_email: editSupplierEmail.value, 
+                reorder_point: editReorderPoint.value,
+                reorder_quantity: editReorderQuantity.value,
+                document_number: editDocumentNumber.value,
                 itemId: editFormItemId.value,
             };
+
             return formData;
         }
     }
 
-    //Data Management Function
     async function fetchInventoryData() {
         try {
             const response = await fetch("/getInventoryData");
-
+    
             if (!response.ok) {
                 throw new Error("Failed to fetch inventory data");
             }
-
+    
             const data = await response.json();
 
             data.forEach((item) => {
-                item["Edit"] =
-                    '<button id="editButton" class="tableButton">Edit</button>';
-                item["Add to Cart"] =
-                    '<button id="cartButton" class="tableButton">Add to Cart</button>';
+                item["Edit"] = '<button id="editButton" class="tableButton">Edit</button>';
+                item["Add to Cart"] = '<button id="cartButton" class="tableButton">Add to Cart</button>';
+                
+                // Generate the checkbox HTML
+                const isChecked = item.send_email === true;
+                item["Send Email"] = 
+                        `<input type="checkbox" id="emailSender" ${isChecked ? 'checked' : ''}>`;
             });
-
+    
             return data;
         } catch (error) {
             console.error("Error fetching inventory data:", error);
             return [];
         }
     }
+    
 
-    //Data Management Function
     async function fetchData() {
         try {
             const data = await fetchInventoryData();
@@ -135,7 +146,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const columns = [
                 { data: "sku" },
                 { data: "product_name" },
-                { data: "documentNumber" },
+                { data: "document_number" },
                 { data: "quantity_received" },
                 { data: "quantity_inStock" },
                 {
@@ -144,7 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         if (type === "display" || type === "filter") {
                             return formatAsPhCurrency(data);
                         }
-                        return data; // For all other types, return the original data
+                        return data; 
                     },
                 },
                 {
@@ -153,28 +164,29 @@ document.addEventListener("DOMContentLoaded", async () => {
                         if (type === "display" || type === "filter") {
                             return formatAsPhCurrency(data);
                         }
-                        return data; // For all other types, return the original data
+                        return data; 
                     },
                 },
-                { data: "supplier" },
-                { data: "updated_at" },
+                { data: "updated_at" }, 
+                { data: "Send Email" },
                 { data: "Add to Cart" },
             ];
-
+    
             // Conditionally add the "Edit" column to the columns array
             if (showEditColumn) {
                 columns.splice(9, 0, { data: "Edit" });
             }
-
+    
             const dataTable = new DataTable(inventoryTable, {
                 data: data,
                 columns: columns,
-            });
-        } catch (error) {
+            });       
+        } 
+        catch (error) {
             console.error("Error fetching data:", error);
         }
     }
-
+    
     //Data Management Function
     function updateTableWithData(data) {
         const dataTable = new DataTable(inventoryTable);
@@ -301,8 +313,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             editCostPrice.value = inventoryItem.cost_price;
             editSellingPrice.value = inventoryItem.selling_price;
             editSupplier.value = inventoryItem.supplier;
-            editReorderPoint.value = inventoryItem.reorderPoint;
-            editDocumentNumber.value = inventoryItem.documentNumber;
+            editSupplierEmail.value = inventoryItem.supplier_email;
+            editReorderPoint.value = inventoryItem.reorder_point;
+            editReorderQuantity.value = inventoryItem.reorder_quantity;
+            editDocumentNumber.value = inventoryItem.document_number;
             editFormItemId.value = inventoryItem._id;
         }
     }
@@ -323,40 +337,45 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // DOM Manipulation Function
     function updateTotalValue(itemQuantity, sellingPrice) {
+
         totalPrice = calculateTotalValue(itemQuantity,sellingPrice);
         const formattedPrice = formatAsPhCurrency(totalPrice);
         sellingPriceDisplay.textContent = `Total Value: ${formattedPrice}`;
-        cartTotalPrice = totalPrice;
+        cartFormSellingPrice = totalPrice;
     }
 
     // DOM Manipulation Function
     function quantityButtons(event) {
+
         const target = event.target.id;
         if (target === "increaseButton") {
             if (parseInt(itemQuantity.value) < cartFormQuantityInStock) {
                 itemQuantity.value++;
-                updateTotalValue(itemQuantity.value, cartFormSellingPrice);
+                updateTotalValue(itemQuantity.value, itemPrice);
             }
         } 
         else if (target === "decreaseButton") {
             if (parseInt(itemQuantity.value) > 1) {
                 itemQuantity.value--;
-                updateTotalValue(itemQuantity.value, cartFormSellingPrice);
+                updateTotalValue(itemQuantity.value, itemPrice);
             }
         }
     }
 
     // DOM Manipulation Function
     function quantityInput(event) {
+
         const target = event.target.id;
         if(target === "itemQuantity") {
             const inputQuantity = parseInt(itemQuantity.value) || itemQuantity.value;
 
             if(inputQuantity > cartFormQuantityInStock) {
                 itemQuantity.value = cartFormQuantityInStock; 
+                updateTotalValue(itemQuantity.value, itemPrice);
             }
             else {
                 itemQuantity.value = inputQuantity;
+                updateTotalValue(itemQuantity.value, itemPrice);
             }
         };
     }
@@ -366,12 +385,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const table = new DataTable(inventoryTable);
         const rowData = table.row(cartButton.closest("tr")).data();
+
+        console.log(rowData);
+
         cartItemId.value = rowData._id;
         cartFormQuantityInStock = rowData.quantity_inStock;
         cartFormSellingPrice = rowData.selling_price;
+        itemPrice = rowData.selling_price;
+
         cartModalContainer.style.display = "block";
         overlay.style.display = "block";
 
+       
         if(rowData) {
             productNameDisplay.textContent = `Product Name: ${rowData.product_name}`;
             sellingPriceDisplay.textContent = `Total Value: ${formatAsPhCurrency(rowData.selling_price)}`;
@@ -380,13 +405,39 @@ document.addEventListener("DOMContentLoaded", async () => {
                 cartFormQuantityInput.addEventListener("click", quantityButtons);
                 quantityButtonsListener = true;
             }
-
             if(quantityInputListener === false) {
                 cartFormQuantityInput.addEventListener("input", quantityInput); 
                 quantityInputListener = true;
+            } 
+        }
+    };
+    
+    async function handleEmailSender(checkbox) {
+        const table = new DataTable(inventoryTable);
+        const rowData = table.row(checkbox.closest("tr")).data();
+    
+        try {
+            const response = await fetch("/updateSendEmail", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: rowData._id,
+                    send_email: checkbox.checked
+                }),
+            });
+    
+            if (!response.ok) {
+                console.log("Failed to update send_email property");
             }
+    
+            // Handle the response or update the UI as needed
+        } catch (error) {
+            console.error("Error updating send_email property:", error);
         }
     }
+    
 //********************************************************************************
 ////Display add Inventory form
 //********************************************************************************
@@ -399,6 +450,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 ////Add Inventory Form Event Listener
 //********************************************************************************
     addInventoryForm.addEventListener("submit", async (event) => {
+
         event.preventDefault();
         const formData = extractFormData(addInventoryForm);
 
@@ -413,7 +465,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             initTable();
             resetInputFields();
-        } catch (error) {
+        } 
+        catch (error) {
             console.error("Error:", error);
         }
 
@@ -464,7 +517,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const documentNumberStrong = document.createElement("strong");
                 documentNumberStrong.textContent = "Document Number:";
                 const documentNumberSpan = document.createElement("span");
-                documentNumberSpan.textContent = item.documentNumber;
+                documentNumberSpan.textContent = item.document_number;
                 documentNumberElement.appendChild(documentNumberStrong);
                 documentNumberElement.appendChild(documentNumberSpan);
 
@@ -488,9 +541,10 @@ document.addEventListener("DOMContentLoaded", async () => {
                 selling_price.disabled = true;
                 cost_price.disabled = true;
                 supplier.disabled = true;
-                reorderPoint.disabled = true;
+                reorder_point.disabled = true;
             });
         } else if (response.length === 1) {
+
             productName = response[0].product_name;
             sellingPrice = response[0].selling_price;
 
@@ -499,7 +553,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             cost_price.value = response[0].cost_price;
             selling_price.value = response[0].selling_price;
             supplier.value = response[0].supplier;
-            reorderPoint.value = response[0].reorderPoint;
+            reorder_point.value = response[0].reorder_point;
+            supplier_email.value = response[0].supplier_email;
+            reorder_quantity.value = response[0].reorder_quantity;
 
             // Disable the input fields
             sku.disabled = true;
@@ -508,8 +564,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             selling_price.disabled = true;
             cost_price.disabled = true;
             supplier.disabled = true;
-            reorderPoint.disabled = true;
-        } else if (response.error) {
+            reorder_point.disabled = true;
+            supplier_email.disabled = true; 
+            reorder_quantity.disabled = true;
+        } 
+        else if (response.error) {
             console.log("No items returned");
         }
     }
@@ -519,7 +578,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     documentInput.addEventListener("keydown", async (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
-            const docInput = document.getElementById("documentNumber").value;
+            
+            const docInput = document.getElementById("document_number").value;
 
             try {
                 const response = await fetch(`getInventoryByDoc/${docInput}`);
@@ -532,24 +592,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 const data = await response.json();
 
-                console.log(data);
-
                 if (data.length > 0) {
                     alert("Document number already exist");
                 } else {
                     addInventoryFormGrid.style.display = "grid";
                     skuListContainer.style.display = "none";
 
-                    product_name.value = productName
-                        ? productName
-                        : product_name.value;
+                    product_name.value = productName ? productName : product_name.value;
                     received_quantity.disabled = false;
-                    selling_price.value = sellingPrice
-                        ? sellingPrice
-                        : selling_price.value;
+                    selling_price.value = sellingPrice ? sellingPrice : selling_price.value;
                     cost_price.disabled = false;
                     supplier.disabled = false;
-                    reorderPoint.disabled = false;
+                    supplier_email.disabled = false; 
+                    reorder_point.disabled = false;
+                    reorder_quantity.disabled = false;
                 }
             } catch (error) {
                 // Handle the error here
@@ -579,12 +635,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 //********************************************************************************
     inventoryTable.addEventListener("click", async (event) => {
         const targetId = event.target.id;
+
         if (targetId === "editButton") {
             await handleEditButtonClick(event.target);
-        }
-
-        if (targetId === "cartButton") {
+        } 
+        else if (targetId === "cartButton") {
             await handleCartButtonClick(event.target);
+        } 
+        else if(targetId === "emailSender") {
+            await handleEmailSender(event.target);
         }
     });
 
@@ -592,6 +651,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 ////Edit inventory form submission
 //********************************************************************************
     editInventoryForm.addEventListener("submit", async (event) => {
+
         event.preventDefault();
         const formData = extractFormData(editInventoryForm);
 
@@ -605,7 +665,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
 
             const data = await response.json();
-            console.log(data);
             closeModal(editModalContainer, overlay);
 
             fetchInventoryData().then((data) => {
@@ -649,12 +708,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 ////Cart Form submission
 //********************************************************************************
     cartForm.addEventListener("submit", async (event) => {
+
         event.preventDefault();
+        
 
         const formData = {
             itemId: cartItemId.value,
             itemQuantity: itemQuantity.value,
-            totalPrice: cartTotalPrice,
+            totalPrice: cartFormSellingPrice,
+            quantityInStock: cartFormQuantityInStock
         };
 
         try {
@@ -668,9 +730,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const data = await response.json();
 
+            if(data.error) {
+                alert(data.error);
+            }
+
             populateCartItems();
             closeModal(cartModalContainer, overlay);
-        } catch (error) {
+            itemQuantity.value = 1;
+        } 
+        catch (error) {
             console.error("Error:", error);
         }
     });
@@ -679,10 +747,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 ////Cart POS Event listener
 //********************************************************************************
     cartItemsElements.addEventListener("change", function (event) {
-        if (
-            event.target.type === "checkbox" &&
-            event.target.name === "cartItem"
-        ) {
+        if (event.target.type === "checkbox" && event.target.name === "cartItem") {
+
             const checkedCheckboxes = cartItemsElements.querySelectorAll(
                 'input[name="cartItem"]:checked'
             );

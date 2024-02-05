@@ -5,14 +5,17 @@ const addUser = async (req, res) => {
   
     const { username, emailAddress, userType, password, confirmPassword } = req.body;
 
+    if (userType !== 'admin' && userType !== 'basic-user') {
+        
+        req.flash('error', 'Invalid user type');
+        return res.json({ success: false, message: 'Invalid user type' });
+    };
 
     if (password !== confirmPassword) {
-        console.log('password mismatch')
         req.flash('error', 'Password mismatch');
         res.json({ success: false, message: 'Password mismatch' });
-    } else {
-        console.log('password match');
-
+    } 
+    else {
         try {
             // Generate salt and hash the password
             const salt = await bcrypt.genSalt(10);
@@ -29,10 +32,11 @@ const addUser = async (req, res) => {
                 updated_at: new Date()
             });
 
-            console.log('User added successfully');
             req.flash('success', 'User added successfully');
             res.json({ success: true, message: 'User added successfully' });
-        } catch (err) {
+        } 
+        catch (err) {
+            
             console.error('Error adding user:', err);
             req.flash('error', 'Error adding user');
             res.json({ success: false, message: 'Error adding user' });

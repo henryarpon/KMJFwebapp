@@ -18,11 +18,6 @@
             </div>
 
             <div class="form-group">
-                <label for="received_quantity">Quantity in stock:</label>
-                <input type="number" id="editQuantityInStock" name="quantity_inStock" min="1" required>
-            </div>
-
-            <div class="form-group">
                 <label for="cost_price">Cost Price:</label>
                 <input type="number" id="editCostPrice" name="cost_price" step="0.01" required>
             </div>
@@ -36,11 +31,26 @@
                 <label for="supplier">Supplier:</label>
                 <input type="text" id="editSupplier" name="supplier" required>
             </div>
+
+            <div class="form-group">
+                <label for="supplier_email">Supplier Email Address:</label>
+                <input type="text" id="editSupplierEmail" name="supplier_email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reorder_point">Reorder Point:</label>
+                <input type="number" id="editReorderPoint" name="reorder_point" required>
+            </div>
+
+            <div class="form-group">
+                <label for="reoder_quantity">Reorder Qauntity:</label>
+                <input type="number" id="editReorderQuantity" name="reoder_quantity" required>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="reorderPoint">Reorder Point:</label>
-            <input type="number" id="editReorderPoint" name="reorderPoint" required>
+            <label for="received_quantity">Quantity in stock:</label>
+            <input type="number" id="editQuantityInStock" name="quantity_inStock" min="1" required>
         </div>
 
         <div id="document-div" class="form-group">

@@ -27,6 +27,7 @@ import removeFromCart from "./controller/removeFromCart.js";
 import checkout from "./controller/checkout.js";
 import requireAdmin from "./authorizationMiddleware.js";
 import dotenv from "dotenv";
+import { sgMail, emailBody, htmlEmailBody } from "./email.js";
 
 //********************************************************************************
 //Middlewares for express, flash and ejs view engines
@@ -70,7 +71,14 @@ mongoose.connect("mongodb://127.0.0.1/KMJFDBase", {
     useUnifiedTopology: true,
 });
 
-//pages routes
+// mongoose.connect("mongodb+srv://henryadmin:Welcome%4003045@cluster0.cgdbghy.mongodb.net/KMJFDBase", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// });
+
+//********************************************************************************
+//GET routes --located in privateRoute.js
+//********************************************************************************
 app.use("/", publicRouter);
 app.use("/", privateRouter);
 
@@ -107,49 +115,19 @@ app.post("/checkout", checkout);
 //Dashboard module
 //********************************************************************************
 
-app.get("/getSalesData", async (req, res) => {
+app.post("/updateSendEmail", async (req, res) => {
+
     try {
-        // Extract filter parameters from the request query
-        const { year, quarter, date, startDate, endDate } = req.query;
+        const { id, send_email } = req.body;
 
-        // Construct a base query object that will be extended based on the provided filters
-        const baseQuery = {};
+        // Find the inventory item by SKU and update the send_email property
+        await Inventory.findOneAndUpdate({ _id: id }, { send_email });
 
-        if (year) {
-            baseQuery.created_at = {
-                $gte: new Date(`${year}-01-01T00:00:00Z`),
-                $lte: new Date(`${year}-12-31T23:59:59Z`),
-            };
-        }
-        if (quarter) {
-            baseQuery.created_at = {
-                $gte: new Date(`${quarter}-01-01T00:00:00Z`),
-                $lte: new Date(`${quarter}-12-31T23:59:59Z`),
-            };
-        }
-        if (date) {
-            baseQuery.created_at = {
-                $gte: new Date(`${date}T00:00:00Z`),
-                $lte: new Date(`${date}T23:59:59Z`),
-            };
-        }
-        if (startDate && endDate) {
-            baseQuery.created_at = {
-                $gte: new Date(`${startDate}T00:00:00Z`),
-                $lte: new Date(`${endDate}T23:59:59Z`),
-            };
-        }
-
-        // Use the base query to filter sales data
-        const salesData = await Sales.find(baseQuery);
-
-        // Return the filtered sales data as JSON
-        res.json({ salesData });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: "An error occurred while fetching sales data.",
-        });
+        res.json({ message: "Send email property updated successfully." });
+    } 
+    catch (error) {
+        console.error("Error updating send_email property:", error);
+        res.json({ error: "Internal server error" });
     }
 });
 
@@ -159,3 +137,6 @@ app.get("/getSalesData", async (req, res) => {
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });
+
+export default app;
+

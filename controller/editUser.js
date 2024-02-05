@@ -5,17 +5,14 @@ const editUser = async (req, res) => {
     const { selectUser, newUsername, newPassword, confirmNewPassword } = req.body;
 
     if (newPassword !== confirmNewPassword) {
-        console.log('password mismatch');
         req.flash('error', 'Password mismatch');
         res.json({ success: false, message: 'Password mismatch' });
-    } else {
-        console.log('password match');
-
+    } 
+    else {
         try {
             const user = await User.findOne({ username: selectUser });
 
             if (!user) {
-                console.log('User not found');
                 req.flash('error', 'User not found');
                 res.json({ success: false, message: 'User not found' });
                 return;
@@ -31,7 +28,6 @@ const editUser = async (req, res) => {
             user.updated_at = new Date();
             await user.save();
 
-            console.log('User updated successfully');
             req.flash('success', 'User updated successfully');
             res.json({ success: true, message: 'User updated successfully' });
         } 

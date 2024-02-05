@@ -1,8 +1,10 @@
 import Inventory from "../models/inventory.js";
 import Sales from "../models/sales.js";
+import emailSender from "../emailSender.js";
 import axios from "axios";
 
 const checkout = async (req, res) => {
+
     try {
         const salesData = req.body;
 
@@ -18,15 +20,36 @@ const checkout = async (req, res) => {
         await newSales.save();
 
         // Fetch all inventory items using $in operator
-        const productNames = salesData.items.map(item => item.productName);
-        const inventoryItems = await Inventory.find({ product_name: { $in: productNames } });
+        // const productNames = salesData.items.map(item => item.productName);
+        // const inventoryItems = await Inventory.find({ product_name: { $in: productNames } });
+
+        const inventoryIds = salesData.items.map(item => item.inventoryId);
+        const inventoryItems = await Inventory.find({ _id: { $in: inventoryIds } });
+        
 
         // Update inventory quantities
         for (const item of salesData.items) {
-            const inventoryItem = inventoryItems.find(item => item.product_name === item.product_name);
 
-            if (inventoryItem) {
+            let inventoryId = item.inventoryId;
+        
+            const inventoryItem = inventoryItems.find(item => item._id.toString() === inventoryId);
+
+            // const inventoryItem = inventoryItems.find(item => item.product_name === item.product_name);
+
+            if ((inventoryItem._id).toString() === inventoryId) {
+                
                 inventoryItem.quantity_inStock -= item.quantity;
+                emailSender(
+                            inventoryItem._id, 
+                            inventoryItem. product_name,
+                            inventoryItem.quantity_inStock,
+                            inventoryItem.reorder_point, 
+                            inventoryItem.reorder_quantity, 
+                            inventoryItem.send_email,
+                            inventoryItem.supplier,
+                            inventoryItem.supplier_email
+                        );
+                
                 await inventoryItem.save();
             }
             

@@ -1,6 +1,7 @@
 import User from "./models/users.js";
 import Content from "./models/content.js";
 import Inventory from "./models/inventory.js";
+import Sales from "./models/sales.js";
 import Cart from "./models/cart.js";
 import requireLogin from "./authenticationMiddleware.js";
 import requireAdmin from "./authorizationMiddleware.js";
@@ -45,8 +46,8 @@ privateRouter.get("/getInventoryData", requireLogin, async (req, res) => {
         const inventoryData = await Inventory.find()
             .sort({ updated_at: -1 }) // Sort by updated_at in descending order
             .select(
-                "_id product_name quantity_received quantity_inStock cost_price selling_price supplier sku documentNumber  updated_at"
-            )
+                    "_id product_name quantity_received quantity_inStock cost_price selling_price send_email sku document_number updated_at"
+                )
             .lean(); // Get plain JavaScript objects instead of Mongoose documents
 
         const formattedInventoryData = inventoryData.map((item) => ({
@@ -84,15 +85,17 @@ privateRouter.get(
     }
 );
 
-privateRouter.get(
-    "/getInventoryByDoc/:docNum",
-    requireLogin,
-    async (req, res) => {
+privateRouter.get("/getInventoryByDoc/:docNum", requireLogin, async (req, res) => {
+
         const docNum = req.params.docNum;
         const upperCaseDoc = docNum.toUpperCase();
+
+        console.log(upperCaseDoc);
         const inventoryItem = await Inventory.find({
-            documentNumber: upperCaseDoc,
+            document_number: upperCaseDoc,
         });
+
+        console.log(inventoryItem);
 
         if (!inventoryItem) {
             return res.json({ error: "Inventory item not found" });
@@ -154,6 +157,53 @@ privateRouter.get("/getCartItems", requireLogin, async (req, res) => {
     }
 });
 
+privateRouter.get("/getSalesData", async (req, res) => {
+    try {
+        // Extract filter parameters from the request query
+        const { year, quarter, date, startDate, endDate } = req.query;
+
+        // Construct a base query object that will be extended based on the provided filters
+        const baseQuery = {};
+
+        if (year) {
+            baseQuery.created_at = {
+                $gte: new Date(`${year}-01-01T00:00:00Z`),
+                $lte: new Date(`${year}-12-31T23:59:59Z`),
+            };
+        }
+        if (quarter) {
+            baseQuery.created_at = {
+                $gte: new Date(`${quarter}-01-01T00:00:00Z`),
+                $lte: new Date(`${quarter}-12-31T23:59:59Z`),
+            };
+        }
+        if (date) {
+            baseQuery.created_at = {
+                $gte: new Date(`${date}T00:00:00Z`),
+                $lte: new Date(`${date}T23:59:59Z`),
+            };
+        }
+        if (startDate && endDate) {
+            baseQuery.created_at = {
+                $gte: new Date(`${startDate}T00:00:00Z`),
+                $lte: new Date(`${endDate}T23:59:59Z`),
+            };
+        }
+
+        // Use the base query to filter sales data
+        const salesData = await Sales.find(baseQuery);
+
+        // Return the filtered sales data as JSON
+        res.json({ salesData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            error: "An error occurred while fetching sales data.",
+        });
+    }
+});
+
+
 //logout route
 privateRouter.get("/logout", requireLogin, (req, res) => {
     req.session.destroy((err) => {
@@ -164,7 +214,7 @@ privateRouter.get("/logout", requireLogin, (req, res) => {
     });
 });
 
-//Page routes
+// Page routes
 privateRouter.get("/account", requireLogin, requireAdmin, async (req, res) => {
     const users = await User.find();
     res.render("private_views/account", {
