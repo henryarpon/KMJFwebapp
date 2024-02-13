@@ -256,6 +256,8 @@ privateRouter.get("/inventory", requireLogin, (req, res) => {
     try {
         const userType = req.session.userType;
 
+        console.log(userType);
+
         res.render("private_views/inventory", {
             userType: userType,
             pageTitle: "Inventory Manager",

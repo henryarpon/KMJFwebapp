@@ -2,6 +2,7 @@ import { fileURLToPath } from "url";
 import { dirname, format } from "path";
 import express from "express";
 import session from "express-session";
+import connectMongo from 'connect-mongo';
 import flash from "connect-flash";
 import User from "./models/users.js";
 import Content from "./models/content.js";
