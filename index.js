@@ -2,7 +2,7 @@ import { fileURLToPath } from "url";
 import { dirname, format } from "path";
 import express from "express";
 import session from "express-session";
-import connectMongo from 'connect-mongo';
+import MongoStore from 'connect-mongo';
 import flash from "connect-flash";
 import User from "./models/users.js";
 import Content from "./models/content.js";
@@ -47,31 +47,6 @@ app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 app.set("views", __dirname + "/views");
 
-//********************************************************************************
-//SESSION Middleware
-//********************************************************************************
-// app.use(
-//     session({
-//         secret: process.env.SESSION_SECRET,
-//         resave: false,
-//         saveUninitialized: false,
-//     })
-// );
-
-const MongoStore = connectMongo(session);
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: new MongoStore({ mongooseConnection: mongoose.connection }),
-}));
-
-app.use((req, res, next) => {
-    res.locals.successMessage = req.flash("success");
-    res.locals.errorMessage = req.flash("error");
-    next();
-});
 
 //********************************************************************************
 //MongoDB initialization
@@ -81,10 +56,32 @@ app.use((req, res, next) => {
 //     useUnifiedTopology: true,
 // });
 
-mongoose.connect("mongodb+srv://henryadmin:Welcome%4003045@cluster0.cgdbghy.mongodb.net/KMJFDBase", {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
+
+
+//********************************************************************************
+//SESSION Middleware
+//********************************************************************************
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: new MongoStore({
+        mongoUrl: mongoose.connection._connectionString,
+        mongoOptions: {}
+      })
+  }));
+
+app.use((req, res, next) => {
+    res.locals.successMessage = req.flash("success");
+    res.locals.errorMessage = req.flash("error");
+    next();
+});
+
 
 //********************************************************************************
 //GET routes --located in privateRoute.js
