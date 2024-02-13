@@ -37,7 +37,7 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(flash());
 app.use(express.json({ limit: "20mb" }));
@@ -66,15 +66,15 @@ app.use((req, res, next) => {
 //********************************************************************************
 //MongoDB initialization
 //********************************************************************************
-mongoose.connect("mongodb://127.0.0.1/KMJFDBase", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-// mongoose.connect("mongodb+srv://henryadmin:Welcome%4003045@cluster0.cgdbghy.mongodb.net/KMJFDBase", {
+// mongoose.connect("mongodb://127.0.0.1/KMJFDBase", {
 //     useNewUrlParser: true,
 //     useUnifiedTopology: true,
 // });
+
+mongoose.connect("mongodb+srv://henryadmin:Welcome%4003045@cluster0.cgdbghy.mongodb.net/KMJFDBase", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
 //********************************************************************************
 //GET routes --located in privateRoute.js
