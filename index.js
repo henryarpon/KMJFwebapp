@@ -2,7 +2,7 @@ import { fileURLToPath } from "url";
 import { dirname, format } from "path";
 import express from "express";
 import session from "express-session";
-import MongoStore from 'connect-mongo';
+import MongoDBSessionStore from 'connect-mongodb-session';
 import flash from "connect-flash";
 import User from "./models/users.js";
 import Content from "./models/content.js";
@@ -66,15 +66,29 @@ mongoose.connect(process.env.MONGODB_URI, {
 //SESSION Middleware
 //********************************************************************************
 
+// app.use(session({
+//     secret: process.env.SESSION_SECRET,
+//     resave: false,
+//     saveUninitialized: false,
+//     store: new MongoStore({
+//         mongoUrl: mongoose.connection._connectionString,
+//         mongoOptions: {}
+//       })
+//   }));
+
+const MongoDBStore = MongoDBSessionStore(session);
+
+const store = new MongoDBStore({
+    uri: process.env.MONGODB_URI, // Your MongoDB connection URI
+    collection: 'sessions' // Collection to store sessions in MongoDB
+});
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({
-        mongoUrl: mongoose.connection._connectionString,
-        mongoOptions: {}
-      })
-  }));
+    store: store // Use the MongoDB session store
+}));
 
 app.use((req, res, next) => {
     res.locals.successMessage = req.flash("success");
