@@ -49,13 +49,22 @@ app.set("views", __dirname + "/views");
 //********************************************************************************
 //SESSION Middleware
 //********************************************************************************
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-    })
-);
+// app.use(
+//     session({
+//         secret: process.env.SESSION_SECRET,
+//         resave: false,
+//         saveUninitialized: false,
+//     })
+// );
+
+const MongoStore = connectMongo(session);
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: new MongoStore({ mongooseConnection: mongoose.connection }),
+}));
 
 app.use((req, res, next) => {
     res.locals.successMessage = req.flash("success");
