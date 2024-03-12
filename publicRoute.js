@@ -30,4 +30,16 @@ publicRouter.get('/login', (req, res) => {
   res.render('public_views/login');
 });
 
+publicRouter.get('/landing', async (req, res) => {
+  
+  try {
+    const contents = await Content.find().sort({ created_at: -1 });
+    res.render('public_views/landingpage', { contents });
+  } 
+  catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 export default publicRouter;

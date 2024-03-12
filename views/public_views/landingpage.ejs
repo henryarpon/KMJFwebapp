@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/landing.css">
+    <script src="/script/content.js"></script>
+    <script src="script/showDate.js"></script>
+    <title>KMJF Polynets</title>
+</head>
+<body>
+   
+    <section class="hero" id="hero">
+        <nav>
+            <p class="nav__item">KMJF POLYNETS</p>
+            <div class="nav__right-items">
+                <a href="#gallery" class="nav__item">Gallery</a>
+                <a href="#promotion" class="nav__item">Promotions</a>
+                <a href="#find-us" class="nav__item">Find Us</a>
+                <a href="/login" class="nav__item">Login</a>
+            </div>
+        </nav>
+        <header>
+            <h1 class="header__title">Premium Quality Range Nets</h1>
+            <p class="header__description">Explore our range of top-quality nets tailored for diverse applications.</p>
+            <img class="header__image" src="images/header-image.png" alt="nets">
+            <button class="btn">Contact Us</button>
+        </header>
+    </section>
+    
+    <section class="applications">
+        <h2>Range Nets for Various Applications</h2>
+        <div class="applications_container">
+            <div class="applications__item">
+                <p>FARMING</p>
+                <p>Shield crops and livestock with our durable nets, defending against pests and harsh weather</p>
+            </div>
+
+            <div class="applications__item">
+                <p>FISHING</p>
+                <p>Enhance catch with durable nets designed for peak efficiency and performance on water</p>
+            </div>
+
+            <div class="applications__item">
+                <p>POULTRY</p>
+                <p>Reliably contain poultry for safety and comfort with our specialized net</p>
+            </div>
+
+            <div class="applications__item">
+                <p>CONSTRUCTION</p>
+                <p>Ensure site safety with sturdy construction nets for reliable fall protection and security</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="products" id="gallery">
+        <h2>Explore our Products</h2>
+    
+        <div class="products__container">
+            <div class="image-wrapper">
+                <img src="/images/image1.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image2.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image2.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image4.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image5.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image6.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image7.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+
+            <div class="image-wrapper">
+                <img src="/images/image8.jpg" alt="image1">
+                <div class="image-overlay"></div>
+            </div>
+            <!-- Repeat the same structure for other images -->
+        </div>
+
+        <p>
+            You can select any product to be redirected to our Shopee online page, or choose any product to place an online order directly.
+        </p>
+    </section>
+    
+    <section class="promotions" id="promotion">
+        <h2>Discover Our Exclusive Offers!</h2>
+        
+        <% contents.forEach((content) => { %>
+            <div class="card">
+                <div class="content-card">
+                    <div class="content-head">
+                        <h3><%= content.title %></h3>
+                        <p class="date" data-created="<%= content.updated_at %>"></p>
+                    </div>
+                        <div class="content-body"><%- content.content.html %></div>
+                    </div>
+            </div>
+        <% }); %>  
+    </section>
+
+    <section class="contact" id="find-us">
+        <h2>Visit our Location & Contact Us</h2>
+        <div class="content">
+            <div class="card">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3857.014293651545!2d121.06531987495363!3d14.824455885688835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397afa2f43f3777%3A0x36bbebd8b36c2953!2sPalmera%20Northwinds%20City%20-%20Phase%20VII!5e0!3m2!1sen!2sph!4v1710236289629!5m2!1sen!2sph" 
+                    width="600" 
+                    height="450" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            <p>
+                Welcome to our company! We're your reliable source for high-quality nets, serving various sectors like farming, poultry, fishing, and industry. Based in <span class="bold">Block 5 Lot 8 Palmera Northwinds City Phase VII, San Jose, Del Monte Bulacan</span>, you can easily purchase our products through Facebook and Shopee or visit our physical store for bulk orders. Explore our superior nets online or in person. Need help? Contact us at <span class="bold">0963306612</span> or <span class="bold">jrfortunado26@gmail.com</span>. Thank you for choosing us. We're excited to provide you with top-notch netting solutions!
+            </p>
+            
+        </div>
+    </section>
+    
+    
+
+    <footer id="footer">
+        <div class="container">
+            <p>© 2023 KMJF Polynets. All rights reserved.</p>
+            <p>CONTACT US: Block 5 Lot 8 Palmera Northwinds City Phase VII, San Jose, Del Monte Bulacan | Phone: 0963306612 | Email: jrfortunado26@gmail.com</p>
+            <p>Shop with us on Shopee: <a href="https://shopee.ph/philippinesnetrangenetlambat" target="_blank">PhilippinesNetRangeNetLambat</a></p>
+        </div>
+    </footer>
+    
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+    </script>
+</body>
+</html>
