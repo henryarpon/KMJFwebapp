@@ -121,9 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const salesData = await response.json();
                 console.log(salesData);
-                // Update the chart data based on the fetched salesData
-                // updateChartWithData(salesData.salesData, timeframe);
-                populateTable(salesData);
+
+                populateTable(salesData.salesData, timeframe);
+                
             } else {
                 console.error('Failed to fetch sales data');
             }
@@ -136,11 +136,36 @@ document.addEventListener('DOMContentLoaded', () => {
 //********************************************************************************
 ///Update Chart 
 //********************************************************************************
-function populateTable(data) {
+function populateTable(salesData, timeframe) {
+    const tableBody = document.getElementById('myTable').getElementsByTagName('tbody')[0];
   
-}
-
-
+    // Clear existing rows
+    // tableBody.innerHTML = '';
+  
+    // Loop through each sale object in the salesData array
+    salesData.forEach(sale => {
+      // Loop through each item in the sale object
+      sale.items.forEach(item => {
+        const row = document.createElement('tr');
+  
+        // Create cells for each column
+        const productNameCell = document.createElement('td');
+        productNameCell.textContent = item.productName;
+        row.appendChild(productNameCell);
+  
+        const quantityCell = document.createElement('td');
+        quantityCell.textContent = item.quantity;
+        row.appendChild(quantityCell);
+  
+        const priceCell = document.createElement('td');
+        priceCell.textContent = sale.totalPrice / sale.items.length; // Assuming totalPrice is for all items
+        row.appendChild(priceCell);
+  
+        // Append the row to the table body
+        tableBody.appendChild(row);
+      });
+    });
+  }
 //********************************************************************************
 ///Auto load chart updates
 //********************************************************************************
