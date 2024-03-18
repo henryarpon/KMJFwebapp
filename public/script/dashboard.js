@@ -129,6 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
 //********************************************************************************
     function updateChartWithData(salesData, timeframe) {
         // Initialize variables to store labels and sales data
+
+        console.log(salesData);
         let labels = [];
         let salesByPeriod = [];
    
