@@ -162,6 +162,8 @@ privateRouter.get("/getSalesData", async (req, res) => {
         // Extract filter parameters from the request query
         const { year, quarter, date, startDate, endDate } = req.query;
 
+        console.log(req.query);
+
         // Construct a base query object that will be extended based on the provided filters
         const baseQuery = {};
 

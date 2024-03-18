@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"> -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
@@ -20,9 +17,9 @@
         <nav>
             <p class="nav__item">KMJF POLYNETS</p>
             <div class="nav__right-items">
-                <a href="#gallery" class="nav__item">Gallery</a>
-                <a href="#promotion" class="nav__item">Promotions</a>
-                <a href="#find-us" class="nav__item">Find Us</a>
+                <a onclick="jumpToSection('gallery')" class="nav__item">Gallery</a>
+                <a onclick="jumpToSection('promotion')" class="nav__item">Promotions</a>
+                <a onclick="jumpToSection('find-us')" class="nav__item">Find Us</a>
                 <a href="/login" class="nav__item">Login</a>
             </div>
         </nav>
@@ -30,9 +27,9 @@
             <h1 class="header__title">Premium Quality Range Nets</h1>
             <p class="header__description">Explore our range of top-quality nets tailored for diverse applications.</p>
             <img class="header__image" src="images/header-image.png" alt="nets">
-            <button class="btn">Contact Us</button>
+            <button class="btn" onclick="jumpToSection('find-us')">Contact Us</button>
         </header>
-    </section>
+    </section>s
     
     <section class="applications">
         <h2>Range Nets for Various Applications</h2>

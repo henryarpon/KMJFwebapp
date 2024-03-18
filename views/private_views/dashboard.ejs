@@ -14,47 +14,69 @@
                             <div class="filter">
                                 <label for="timeframe">Select Timeframe:</label>
                                 <select id="timeframe" name="timeframe">
-                                    <option value="daily">Daily</option>
+                                    <option value="daily" selected>Daily</option>
                                     <option value="quarterly">Quarterly</option>
                                     <option value="yearly">Yearly</option>
                                 </select>
                             </div>
                             
                             <div id="range-filter">
-                                <!-- Daily Filter (Initially hidden) -->
+                                <!-- Daily Filter -->
                                 <div class="daily-filter">
                                     <label for="calendar">Select Date:</label>
+                                    <!-- <input type="date" id="calendar" name="calendar" value="<?php echo date('Y-m-d'); ?>"> -->
                                     <input type="date" id="calendar" name="calendar">
                                 </div>
-
+                        
                                 <!-- Quarterly Filter (Initially hidden) -->
-                                <div class="quarterly-filter">
+                                <div class="quarterly-filter" style="display: none;">
                                     <label for="quarter">Select Quarter:</label>
                                     <select id="quarter" name="quarter">
                                         <!-- JavaScript will dynamically generate options here -->
                                     </select>
                                 </div>
-
-                                <!-- Yearly Filter (Initially shown) -->
-                                <div class="yearly-filter">
+                        
+                                <!-- Yearly Filter (Initially hidden) -->
+                                <div class="yearly-filter" style="display: none;">
                                     <label for="year">Select Year:</label>
                                     <select id="year" name="year">
                                         <!-- JavaScript will dynamically generate options here -->
                                     </select>
                                 </div>
                             </div>
-
+                        
                             <!-- Apply Filter Button -->
                             <button type="submit" id="apply-filter">Apply Filter</button>
                         </form>
+                        
                     </div>                    
                 </div>
                 
+                <!-- <div class="right-column">
+                    <div id="salesChartContainer">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div> -->
+
                 <div class="right-column">
                     <div id="salesChartContainer">
                         <canvas id="salesChart"></canvas>
                     </div>
-                </div>
+                
+                    <table id="myTable">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <!-- Add more columns as needed -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be dynamically populated here -->
+                        </tbody>
+                    </table>
+                </div
             </section>
             <hr>
         </main>
