@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 //********************************************************************************
 ///Filter Handler
 //********************************************************************************
+
     function toggleFilterVisibility() {
         const selectedTimeframe = timeframeSelect.value;
 
