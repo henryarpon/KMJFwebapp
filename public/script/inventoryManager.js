@@ -386,8 +386,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const table = new DataTable(inventoryTable);
         const rowData = table.row(cartButton.closest("tr")).data();
 
-        console.log(rowData);
-
         cartItemId.value = rowData._id;
         cartFormQuantityInStock = rowData.quantity_inStock;
         cartFormSellingPrice = rowData.selling_price;
@@ -746,34 +744,35 @@ document.addEventListener("DOMContentLoaded", async () => {
 //********************************************************************************
 ////Cart POS Event listener
 //********************************************************************************
-    cartItemsElements.addEventListener("change", function (event) {
-        if (event.target.type === "checkbox" && event.target.name === "cartItem") {
+cartItemsElements.addEventListener("change", function (event) {
+    if (event.target.type === "checkbox" && event.target.name === "cartItem") {
+        const checkedCheckboxes = cartItemsElements.querySelectorAll('input[name="cartItem"]:checked');
 
-            const checkedCheckboxes = cartItemsElements.querySelectorAll(
-                'input[name="cartItem"]:checked'
-            );
-            let totalPrice = 0;
+        let cartTotalPrice = 0;
 
-            checkedCheckboxes.forEach((checkbox) => {
-                const itemDiv = checkbox.closest(".cartItemCard");
-                const totalPriceElement = itemDiv.querySelector(".total-price");
-                const totalPriceText = totalPriceElement.textContent;
+        checkedCheckboxes.forEach((checkbox) => {
+            const itemDiv = checkbox.closest(".cartItemCard");
+            const totalPriceElement = itemDiv.querySelector(".total-price");
+            const totalPriceText = totalPriceElement.textContent;
+            const itemNameElement = itemDiv.querySelector("span");
+            const itemName = itemNameElement.textContent.trim();
+            const itemQuantity = itemName.split("x")[0].trim();
 
-                // Extract the numeric value by removing "Total Price:" and trimming spaces
-                const numericValue = parseFloat(
-                    totalPriceText.replace(/[^0-9.-]+/g, "")
-                );
+            // Extract the numeric value by removing "Total Price:" and trimming spaces
+            const numericValue = parseFloat(totalPriceText.replace(/[^0-9.-]+/g, ""));
 
-                if (!isNaN(numericValue)) {
-                    totalPrice += numericValue;
+            let price = numericValue;
+            if (!isNaN(numericValue)) {
+                if (parseInt(itemQuantity) > 1) {
+                    price *= parseInt(itemQuantity); // Multiply totalPrice by itemQuantity
                 }
-            });
+                cartTotalPrice += price;
+            }
+        });
 
-            cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsPhCurrency(
-                totalPrice
-            )}</p>`;
-        }
-    });
+        cartTotalPriceElement.innerHTML = `<p>Total Price: ${formatAsPhCurrency(cartTotalPrice)}</p>`;
+    }
+});
 
 //********************************************************************************
 ////Remove items from Cart/POS
@@ -846,11 +845,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 selectedItems.includes(item.itemId)
             );
 
-            // Calculate total price for the selected items
-            const totalPrice = selectedCartItems.reduce(
-                (total, item) => total + item.totalPrice,
-                0
-            );
+            const totalPrice = selectedCartItems.reduce((total, item) => {
+                return total + (item.quantity * item.totalPrice);
+            }, 0);
 
             // Create a new sales document
             const salesData = {
@@ -858,6 +855,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     inventoryId: item.inventoryId,
                     productName: item.productName,
                     quantity: item.quantity,
+                    price: item.totalPrice,
+                    sku: item.sku
                 })),
                 totalPrice: totalPrice,
                 created_at: new Date(),

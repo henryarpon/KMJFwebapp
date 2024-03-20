@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const quantityDisplay = document.getElementById("quantity-display");
     const rangeFilter = document.getElementById("range-filter");
     const applyFilterButton = document.getElementById("apply-filter");
+    const timeframeDisplay = document.querySelector(".timeframe_display");
     let calendarInput = document.getElementById('calendar');
 
     const currentYear = new Date().getFullYear();
@@ -59,33 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     timeframeSelect.addEventListener("change", toggleFilterVisibility);
-   
-//********************************************************************************
-///Sales Chart Display 
-//********************************************************************************
-    // const chart = new Chart(salesChart, {
-    //     type: 'bar',
-    //     data: {
-    //         labels: [], // x-axis, years, weeks and daily hours 
-    //         datasets: [{
-    //             label: 'Sales by Month',
-    //             data: [], // Leave this empty initially, it will be updated later
-    //             backgroundColor: 'blue',
-    //             borderColor: 'yellow', // Adjust the color as needed
-    //             borderWidth: 1
-    //         }]
-    //     },
-    //     options: {
-    //         scales: {
-    //             y: {
-    //                 beginAtZero: true,
-    //                 max: 1000, // Set the maximum value for the y-axis
-    //                 stepSize: 10, // Set the step size for the y-axis
-    //             },
-    //         },
-    //     },
-    // });
-   
+     
 //********************************************************************************
 ///Form event listener / fetching data from sales collection
 //********************************************************************************
@@ -121,8 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (response.ok) {
                 const salesData = await response.json();
-                console.log(salesData);
-
+             
                 populateTable(salesData.salesData, timeframe);
                 
             } else {
@@ -137,36 +111,82 @@ document.addEventListener('DOMContentLoaded', () => {
 //********************************************************************************
 ///Update Chart 
 //********************************************************************************
-function populateTable(salesData, timeframe) {
-    const tableBody = document.getElementById('myTable').getElementsByTagName('tbody')[0];
-  
-    // Clear existing rows
-    // tableBody.innerHTML = '';
-  
-    // Loop through each sale object in the salesData array
-    salesData.forEach(sale => {
-      // Loop through each item in the sale object
-      sale.items.forEach(item => {
-        const row = document.createElement('tr');
-  
-        // Create cells for each column
-        const productNameCell = document.createElement('td');
-        productNameCell.textContent = item.productName;
-        row.appendChild(productNameCell);
-  
-        const quantityCell = document.createElement('td');
-        quantityCell.textContent = item.quantity;
-        row.appendChild(quantityCell);
-  
-        const priceCell = document.createElement('td');
-        priceCell.textContent = sale.totalPrice / sale.items.length; // Assuming totalPrice is for all items
-        row.appendChild(priceCell);
-  
-        // Append the row to the table body
-        tableBody.appendChild(row);
-      });
+
+    const capitalizeFirstLetter = (string) => {
+        return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+    };
+
+    const currencyFormatter = new Intl.NumberFormat('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+        minimumFractionDigits: 2
     });
-  }
+
+    function populateTable(salesData, timeframe) {
+        const tableBody = document.getElementById('myTable').getElementsByTagName('tbody')[0];
+
+        // Clear existing rows
+        tableBody.innerHTML = '';
+
+        let totalSales = 0;
+
+        // Loop through each sale object in the salesData array
+        salesData.forEach(sale => {
+
+            // Loop through each item in the sale object
+            sale.items.forEach(item => {
+
+                const row = document.createElement('tr');
+
+                // Create cells for each column
+                const skuCell = document.createElement('td');
+                skuCell.textContent = item.sku;
+                row.appendChild(skuCell);
+
+                const productNameCell = document.createElement('td');
+                productNameCell.textContent = item.productName;
+                row.appendChild(productNameCell);
+
+                const quantityCell = document.createElement('td');
+                quantityCell.textContent = item.quantity;
+                row.appendChild(quantityCell);
+
+                const priceCell = document.createElement('td');
+                priceCell.textContent = item.price
+                row.appendChild(priceCell);
+
+                const totalPriceCell = document.createElement('td');
+                totalPriceCell.textContent = item.price * item.quantity;
+                row.appendChild(totalPriceCell);
+        
+                // Append the row to the table body
+                tableBody.appendChild(row);
+            });
+
+            totalSales += sale.totalPrice;
+        });
+
+        // Display timeframe and total sales
+        if (timeframe === "daily") {
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            
+            timeframeDisplay.textContent = `Daily Sales Report as of ${formattedDate}`;
+        }
+        else if (timeframe === "yearly") {
+            const currentDate = new Date();
+            const year = currentDate.getFullYear();
+            timeframeDisplay.textContent = `Annual Sales Report for ${year}`;
+        }
+        
+        salesDisplay.textContent = `Timeframe: ${capitalizeFirstLetter(timeframe)}`;
+        quantityDisplay.textContent = `Total Sales: ${currencyFormatter.format(totalSales)}`;
+    }
+
 //********************************************************************************
 ///Auto load chart updates
 //********************************************************************************

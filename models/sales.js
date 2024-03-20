@@ -4,7 +4,9 @@ const salesSchema = new mongoose.Schema({
     items: [
       {
         productName: String,
-        quantity: Number
+        quantity: Number,
+        price: Number,
+        sku: String
       }
     ],
     totalPrice: Number,

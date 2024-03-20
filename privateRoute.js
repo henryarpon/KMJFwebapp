@@ -90,7 +90,6 @@ privateRouter.get("/getInventoryByDoc/:docNum", requireLogin, async (req, res) =
         const docNum = req.params.docNum;
         const upperCaseDoc = docNum.toUpperCase();
 
-        console.log(upperCaseDoc);
         const inventoryItem = await Inventory.find({
             document_number: upperCaseDoc,
         });
@@ -124,17 +123,15 @@ privateRouter.get("/getCartItems", requireLogin, async (req, res) => {
     try {
         // Find all cart items and populate the inventoryItem field with product details
         const cartItems = await Cart.find({})
-            .populate("inventoryItem", "product_name")
+            .populate("inventoryItem", "product_name sku")
             .exec();
 
         // Map the retrieved cart items to the desired format
         const formattedCartItems = cartItems.map((cartItem) => {
-            const productName = cartItem.inventoryItem
-                ? cartItem.inventoryItem.product_name
-                : "Unknown Product";
-            const inventoryId = cartItem.inventoryItem
-                ? cartItem.inventoryItem._id
-                : "Unknown Product";
+
+            const productName = cartItem.inventoryItem ? cartItem.inventoryItem.product_name : "Unknown Product";
+            const inventoryId = cartItem.inventoryItem ? cartItem.inventoryItem._id: "Unknown Product";
+            const sku = cartItem.inventoryItem ? cartItem.inventoryItem.sku : "Unknown SKU";
 
             return {
                 itemId: cartItem._id,
@@ -142,6 +139,7 @@ privateRouter.get("/getCartItems", requireLogin, async (req, res) => {
                 productName: productName,
                 quantity: cartItem.quantity,
                 totalPrice: cartItem.totalPrice,
+                sku: sku,
             };
         });
 
@@ -161,8 +159,6 @@ privateRouter.get("/getSalesData", async (req, res) => {
     try {
         // Extract filter parameters from the request query
         const { year, quarter, date, startDate, endDate } = req.query;
-
-        console.log(req.query);
 
         // Construct a base query object that will be extended based on the provided filters
         const baseQuery = {};

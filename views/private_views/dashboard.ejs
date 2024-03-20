@@ -4,9 +4,9 @@
                 <div class="left-column">
                     <div class="card" id="sales-card">
                         <p id="sales-display"></p>
-                        <hr>
                         <p id="quantity-display"></p>
                         <hr>
+                        
                     </div>
                     <div class="card" id="filters-card">
                         <form id="form-filter">
@@ -53,13 +53,20 @@
                 </div>
                 
                 <div class="right-column">
+
+                    <div class="timeframe_report">
+                        <p class="timeframe_display"></p>
+                    </div>
+
                     <div id="salesChartContainer">
                         <table id="myTable">
                             <thead>
                                 <tr>
+                                    <th>SKU</th>
                                     <th>Product Name</th>
                                     <th>Quantity</th>
-                                    <th>Price</th>
+                                    <th>Price per item</th>
+                                    <th>Total Price</th>
                                     <!-- Add more columns as needed -->
                                 </tr>
                             </thead>
