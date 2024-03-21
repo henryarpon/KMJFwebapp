@@ -6,7 +6,7 @@
                         <p id="sales-display"></p>
                         <p id="quantity-display"></p>
                         <hr>
-                        
+                        <button id="generate-pdf-btn">Print Sales Report</button>
                     </div>
                     <div class="card" id="filters-card">
                         <form id="form-filter">
@@ -15,7 +15,7 @@
                                 <label for="timeframe">Select Timeframe:</label>
                                 <select id="timeframe" name="timeframe">
                                     <option value="daily" selected>Daily</option>
-                                    <option value="quarterly">Quarterly</option>
+                                    <option value="monthly">Monthly</option>
                                     <option value="yearly">Yearly</option>
                                 </select>
                             </div>
@@ -24,14 +24,13 @@
                                 <!-- Daily Filter -->
                                 <div class="daily-filter">
                                     <label for="calendar">Select Date:</label>
-                                    <!-- <input type="date" id="calendar" name="calendar" value="<?php echo date('Y-m-d'); ?>"> -->
                                     <input type="date" id="calendar" name="calendar">
                                 </div>
                         
                                 <!-- Quarterly Filter (Initially hidden) -->
-                                <div class="quarterly-filter" style="display: none;">
-                                    <label for="quarter">Select Quarter:</label>
-                                    <select id="quarter" name="quarter">
+                                <div class="monthly-filter" style="display: none;">
+                                    <label for="monthly">Select Month:</label>
+                                    <select id="monthly" name="monthly">
                                         <!-- JavaScript will dynamically generate options here -->
                                     </select>
                                 </div>
@@ -53,32 +52,34 @@
                 </div>
                 
                 <div class="right-column">
-
-                    <div class="timeframe_report">
-                        <p class="timeframe_display"></p>
-                    </div>
-
-                    <div id="salesChartContainer">
-                        <table id="myTable">
-                            <thead>
-                                <tr>
-                                    <th>SKU</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                    <th>Price per item</th>
-                                    <th>Total Price</th>
-                                    <!-- Add more columns as needed -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Data will be dynamically populated here -->
-                            </tbody>
-                        </table>
+                    <div id="document">
+                        <div class="timeframe_report">
+                            <p class="timeframe_display"></p>
+                            <p class="total_display"></p>
+                        </div>
+                        <div id="salesChartContainer">
+                            <table id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price per item</th>
+                                        <th>Total Price</th>
+                                        <!-- Add more columns as needed -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be dynamically populated here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
             <hr>
         </main>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.1/html2pdf.bundle.min.js"></script>  
 </body>
 </html>
