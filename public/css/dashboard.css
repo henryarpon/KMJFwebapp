@@ -11,14 +11,52 @@ section.dashboard {
     gap: 20px; /* Add some spacing between cards */
 }
 
+#sales-card {
+  position: relative;
+}
+
+#sales-card p {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 .right-column {
     /* No need to specify width or height here */
     margin-left: 20px;
     padding: 30px;
-    height: 540px; 
     border-radius: 8px; 
-    background-color: #f0f5ff; 
+    background-color: #f2f2f2; 
+    border: 1px solid #6c757d;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#document {
+  padding: 20px;
+}
+
+#generate-pdf-btn {
+  position: absolute;
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #ffffff;
+  background-color: #007bff; /* Green color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  bottom: 20px;
+}
+
+#generate-pdf-btn:hover {
+  background-color: #45a049; /* Darker green color on hover */
+}
+
+#generate-pdf-btn:focus {
+  outline: none; /* Remove focus outline */
 }
 
 .float-right-span {
@@ -38,7 +76,17 @@ section.dashboard {
   height: 100%;
 }
 
+.timeframe_display {
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: bold;
+}
 
+.total_display {
+  text-align: center;
+  font-size: 1em;
+  font-weight: bold;
+}
 /* form style */
 form {
     margin-top: 20px;
@@ -94,4 +142,67 @@ button:disabled {
 .weekly-filter {
     display: none;
 }
+
+
+/* Table style */
+#myTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Table header */
+  #myTable th {
+    background-color: #9C27B0;
+    color: white;
+    padding: 12px;
+    text-align: left;
+  }
+  
+  /* Table body */
+  #myTable td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px;
+  }
+  
+  /* Alternate row color */
+  /* #myTable tbody tr:nth-child(even) {
+    background-color: #f0f5ff ;
+  }
+   */
+  /* Hover effect */
+  #myTable tbody tr:hover {
+    background-color: #f2f2f2;
+  }
+  
+  /* Right align the last column (Price) */
+  /* #myTable td:last-child {
+    text-align: right;
+  } */
+  
+  /* Responsive table */
+  @media screen and (max-width: 600px) {
+    #myTable {
+      border: 0;
+    }
+    #myTable thead {
+      display: none;
+    }
+    #myTable tbody tr {
+      margin-bottom: 20px;
+      display: block;
+      border: 1px solid #ddd;
+    }
+    #myTable tbody td {
+      display: block;
+      text-align: right;
+    }
+    #myTable tbody td:before {
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+    }
+  }
+  
 

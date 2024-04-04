@@ -90,7 +90,6 @@ privateRouter.get("/getInventoryByDoc/:docNum", requireLogin, async (req, res) =
         const docNum = req.params.docNum;
         const upperCaseDoc = docNum.toUpperCase();
 
-        console.log(upperCaseDoc);
         const inventoryItem = await Inventory.find({
             document_number: upperCaseDoc,
         });
@@ -124,17 +123,15 @@ privateRouter.get("/getCartItems", requireLogin, async (req, res) => {
     try {
         // Find all cart items and populate the inventoryItem field with product details
         const cartItems = await Cart.find({})
-            .populate("inventoryItem", "product_name")
+            .populate("inventoryItem", "product_name sku")
             .exec();
 
         // Map the retrieved cart items to the desired format
         const formattedCartItems = cartItems.map((cartItem) => {
-            const productName = cartItem.inventoryItem
-                ? cartItem.inventoryItem.product_name
-                : "Unknown Product";
-            const inventoryId = cartItem.inventoryItem
-                ? cartItem.inventoryItem._id
-                : "Unknown Product";
+
+            const productName = cartItem.inventoryItem ? cartItem.inventoryItem.product_name : "Unknown Product";
+            const inventoryId = cartItem.inventoryItem ? cartItem.inventoryItem._id: "Unknown Product";
+            const sku = cartItem.inventoryItem ? cartItem.inventoryItem.sku : "Unknown SKU";
 
             return {
                 itemId: cartItem._id,
@@ -142,6 +139,7 @@ privateRouter.get("/getCartItems", requireLogin, async (req, res) => {
                 productName: productName,
                 quantity: cartItem.quantity,
                 totalPrice: cartItem.totalPrice,
+                sku: sku,
             };
         });
 
@@ -160,7 +158,7 @@ privateRouter.get("/getCartItems", requireLogin, async (req, res) => {
 privateRouter.get("/getSalesData", async (req, res) => {
     try {
         // Extract filter parameters from the request query
-        const { year, quarter, date, startDate, endDate } = req.query;
+        const { year, monthly, date, startDate, endDate } = req.query;
 
         // Construct a base query object that will be extended based on the provided filters
         const baseQuery = {};
@@ -171,10 +169,23 @@ privateRouter.get("/getSalesData", async (req, res) => {
                 $lte: new Date(`${year}-12-31T23:59:59Z`),
             };
         }
-        if (quarter) {
+        if (monthly) {
+            // Extract the current year
+            const currentYear = new Date().getFullYear();
+        
+            // Ensure that the month is represented as a two-digit string
+            const month = monthly.padStart(2, '0');
+        
+            // Calculate the first and last day of the specified month in the current year
+            const startDateOfMonth = `${currentYear}-${month}-01T00:00:00Z`;
+            // The end day of the month might vary based on the month and whether it's a leap year
+            const endDayOfMonth = new Date(currentYear, parseInt(month), 0).getDate();
+            const endDateOfMonth = `${currentYear}-${month}-${endDayOfMonth}T23:59:59Z`;
+        
+            // Set the query for the specified month
             baseQuery.created_at = {
-                $gte: new Date(`${quarter}-01-01T00:00:00Z`),
-                $lte: new Date(`${quarter}-12-31T23:59:59Z`),
+                $gte: new Date(startDateOfMonth),
+                $lte: new Date(endDateOfMonth),
             };
         }
         if (date) {
@@ -202,7 +213,6 @@ privateRouter.get("/getSalesData", async (req, res) => {
         });
     }
 });
-
 
 //logout route
 privateRouter.get("/logout", requireLogin, (req, res) => {

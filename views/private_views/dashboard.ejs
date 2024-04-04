@@ -4,9 +4,9 @@
                 <div class="left-column">
                     <div class="card" id="sales-card">
                         <p id="sales-display"></p>
-                        <hr>
                         <p id="quantity-display"></p>
                         <hr>
+                        <button id="generate-pdf-btn">Print Sales Report</button>
                     </div>
                     <div class="card" id="filters-card">
                         <form id="form-filter">
@@ -14,50 +14,72 @@
                             <div class="filter">
                                 <label for="timeframe">Select Timeframe:</label>
                                 <select id="timeframe" name="timeframe">
-                                    <option value="daily">Daily</option>
-                                    <option value="quarterly">Quarterly</option>
+                                    <option value="daily" selected>Daily</option>
+                                    <option value="monthly">Monthly</option>
                                     <option value="yearly">Yearly</option>
                                 </select>
                             </div>
                             
                             <div id="range-filter">
-                                <!-- Daily Filter (Initially hidden) -->
+                                <!-- Daily Filter -->
                                 <div class="daily-filter">
                                     <label for="calendar">Select Date:</label>
                                     <input type="date" id="calendar" name="calendar">
                                 </div>
-
+                        
                                 <!-- Quarterly Filter (Initially hidden) -->
-                                <div class="quarterly-filter">
-                                    <label for="quarter">Select Quarter:</label>
-                                    <select id="quarter" name="quarter">
+                                <div class="monthly-filter" style="display: none;">
+                                    <label for="monthly">Select Month:</label>
+                                    <select id="monthly" name="monthly">
                                         <!-- JavaScript will dynamically generate options here -->
                                     </select>
                                 </div>
-
-                                <!-- Yearly Filter (Initially shown) -->
-                                <div class="yearly-filter">
+                        
+                                <!-- Yearly Filter (Initially hidden) -->
+                                <div class="yearly-filter" style="display: none;">
                                     <label for="year">Select Year:</label>
                                     <select id="year" name="year">
                                         <!-- JavaScript will dynamically generate options here -->
                                     </select>
                                 </div>
                             </div>
-
+                        
                             <!-- Apply Filter Button -->
                             <button type="submit" id="apply-filter">Apply Filter</button>
                         </form>
+                        
                     </div>                    
                 </div>
                 
                 <div class="right-column">
-                    <div id="salesChartContainer">
-                        <canvas id="salesChart"></canvas>
+                    <div id="document">
+                        <div class="timeframe_report">
+                            <p class="timeframe_display"></p>
+                            <p class="total_display"></p>
+                        </div>
+                        <div id="salesChartContainer">
+                            <table id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price per item</th>
+                                        <th>Total Price</th>
+                                        <!-- Add more columns as needed -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be dynamically populated here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </section>
             <hr>
         </main>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.1/html2pdf.bundle.min.js"></script>  
 </body>
 </html>
