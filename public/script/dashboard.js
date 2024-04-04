@@ -119,17 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
 //********************************************************************************
 ///Update Chart 
 //********************************************************************************
-<<<<<<< HEAD
-    function updateChartWithData(salesData, timeframe) {
-        // Initialize variables to store labels and sales data
-
-        console.log(salesData);
-        let labels = [];
-        let salesByPeriod = [];
-   
-        if (timeframe === 'daily') {
-=======
->>>>>>> dashboard
 
     const capitalizeFirstLetter = (string) => {
         return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
