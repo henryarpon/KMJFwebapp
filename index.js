@@ -51,15 +51,15 @@ app.set("views", __dirname + "/views");
 //********************************************************************************
 //MongoDB initialization
 //********************************************************************************
-mongoose.connect("mongodb://127.0.0.1/KMJFDBase", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-// mongoose.connect(process.env.MONGODB_URI, {
+// mongoose.connect("mongodb://127.0.0.1/KMJFDBase", {
 //     useNewUrlParser: true,
 //     useUnifiedTopology: true,
 // });
+
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
 
 //********************************************************************************
