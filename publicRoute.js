@@ -3,9 +3,9 @@ import Content from './models/content.js';
 
 const publicRouter = express.Router();
 
-publicRouter.get('/', (req, res) => {
-  res.render('public_views/index');
-});
+// publicRouter.get('/', (req, res) => {
+//   res.render('public_views/index');
+// });
 
 publicRouter.get('/gallery', (req, res) => {
   res.render('public_views/gallery');
@@ -30,7 +30,7 @@ publicRouter.get('/login', (req, res) => {
   res.render('public_views/login');
 });
 
-publicRouter.get('/landing', async (req, res) => {
+publicRouter.get('/', async (req, res) => {
   
   try {
     const contents = await Content.find().sort({ created_at: -1 });
